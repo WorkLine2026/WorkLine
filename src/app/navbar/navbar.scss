@@ -1,0 +1,259 @@
+// Variables
+$brand-accent : #2563EB;
+$brand-light  : #EFF6FF;
+$text-primary : #0D0F14;
+$text-muted   : #6B7280;
+$border       : rgba(0, 0, 0, 0.08);
+$nav-height   : 72px;
+$radius-btn   : 12px;
+$font-geo     : 'FiraGO', sans-serif;
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;800&display=swap');
+
+// --- Navbar Core --------------------------------------------------
+.wl-navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  height: $nav-height;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+
+  &.scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom-color: $border;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  }
+
+  &__inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: $text-primary;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 600;
+    flex-shrink: 0;
+
+    .logo-mark { color: $brand-accent; transition: transform 0.3s ease; }
+    strong { color: $brand-accent; font-weight: 800; }
+    
+    &:hover .logo-mark { transform: rotate(-10deg) scale(1.1); }
+  }
+
+  &__links {
+    display: flex;
+    list-style: none;
+    gap: 4px;
+    margin: 0; padding: 0;
+
+    @media (max-width: 992px) { display: none; }
+
+    a {
+      padding: 8px 16px;
+      font-family: $font-geo;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: $text-muted;
+      text-decoration: none;
+      border-radius: 10px;
+      transition: all 0.25s;
+
+      &:hover { color: $brand-accent; background: $brand-light; }
+      &.active { color: $brand-accent; background: $brand-light; font-weight: 600; }
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    @media (max-width: 992px) { display: none; }
+  }
+
+  &__burger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: $brand-light;
+    border-radius: 10px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+
+    @media (max-width: 992px) { display: flex; }
+
+    span {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: $brand-accent;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+  }
+
+  &.menu-open &__burger {
+    span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    span:nth-child(2) { opacity: 0; }
+    span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  }
+
+  &__spacer { height: $nav-height; }
+}
+
+// --- Mobile Drawer ------------------------------------------------
+.wl-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  visibility: hidden;
+  transition: visibility 0.4s;
+
+  &.open { visibility: visible; }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(13, 15, 20, 0.4);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  &__panel {
+    position: absolute;
+    top: 0; right: 0;
+    width: 85%;
+    max-width: 340px;
+    height: 100%;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 24px;
+    box-sizing: border-box;
+  }
+
+  &.open &__backdrop { opacity: 1; }
+  &.open &__panel { transform: translateX(0); }
+
+  &__header {
+    padding-bottom: 20px;
+    border-bottom: 1px solid $border;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 1.2rem;
+    strong { color: $brand-accent; }
+  }
+
+  &__nav {
+    list-style: none;
+    padding: 20px 0;
+    margin: 0;
+
+    li a {
+      display: block;
+      padding: 14px 16px;
+      font-family: $font-geo;
+      font-size: 1.05rem;
+      color: $text-primary;
+      text-decoration: none;
+      border-radius: 12px;
+      margin-bottom: 4px;
+      transition: all 0.2s;
+
+      &:hover, &.active {
+        background: $brand-light;
+        color: $brand-accent;
+        padding-left: 20px;
+      }
+    }
+  }
+
+  &__footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .btn-primary, .btn-ghost { width: 100%; font-size: 1rem; padding: 14px; }
+  }
+
+  .logocenter {
+    display: flex;
+    justify-content: center;
+    color: $brand-accent;
+    opacity: 0.3;
+    padding-bottom: 10px;
+  }
+}
+
+// --- Buttons ------------------------------------------------------
+.btn-primary {
+  background: $brand-accent;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: $radius-btn;
+  font-family: $font-geo;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+
+  &:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: $text-primary;
+  padding: 10px 20px;
+  border-radius: $radius-btn;
+  font-family: $font-geo;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid $border;
+  transition: all 0.25s ease;
+
+  &:hover {
+    background: $brand-light;
+    border-color: $brand-accent;
+    color: $brand-accent;
+  }
+}

@@ -1,0 +1,157 @@
+@use "sass:color";
+
+// --- LOCAL VARIABLES (რომ შეცდომა არ ამოაგდოს) ---
+$f-bg: #0f172a;       // Deep Navy
+$f-primary: #2563eb;  // Royal Blue
+$f-white: #ffffff;
+$f-text: rgba(255, 255, 255, 0.6);
+$f-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+// --- FOOTER STYLES ---
+.main-footer {
+  width: 100%;
+  background-color: $f-bg;
+  padding: 80px 0 40px;
+  position: relative;
+  overflow: hidden;
+  color: $f-white;
+  font-family: 'Inter', sans-serif;
+  border-radius: 40px 40px 0 0; // ლამაზი მომრგვალება ზემოთ
+
+  // ფონური ნათება
+  .footer-glow {
+    position: absolute;
+    top: -150px;
+    right: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba($f-primary, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .footer-content {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 60px;
+    position: relative;
+    z-index: 1;
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      text-align: center;
+    }
+  }
+
+  // ბრენდის სექცია
+  .footer-info {
+    .footer-logo {
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+      span { color: $f-primary; }
+    }
+
+    .footer-text {
+      color: $f-text;
+      line-height: 1.6;
+      max-width: 300px;
+      margin-bottom: 25px;
+      @media (max-width: 768px) { margin: 0 auto 25px; }
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 12px;
+      @media (max-width: 768px) { justify-content: center; }
+
+      .social-btn {
+        width: 38px;
+        height: 38px;
+        background: rgba($f-white, 0.05);
+        border: 1px solid rgba($f-white, 0.1);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: $f-white;
+        font-weight: bold;
+        font-size: 0.8rem;
+        transition: $f-transition;
+
+        &:hover {
+          background: $f-primary;
+          border-color: $f-primary;
+          transform: translateY(-3px);
+        }
+      }
+    }
+  }
+
+  // ნავიგაცია და სათაურები
+  .footer-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: $f-white;
+  }
+
+  .footer-list {
+    list-style: none;
+    padding: 0;
+
+    li {
+      margin-bottom: 12px;
+      
+      a {
+        color: $f-text;
+        text-decoration: none;
+        transition: $f-transition;
+        font-size: 0.95rem;
+
+        &:hover {
+          color: $f-primary;
+          padding-left: 5px;
+        }
+      }
+    }
+
+    &.contact-info li {
+      display: flex;
+      gap: 10px;
+      color: $f-text;
+      font-size: 0.95rem;
+      @media (max-width: 768px) { justify-content: center; }
+      
+      span { color: $f-primary; }
+    }
+  }
+
+  // Copyright ზოლი
+  .footer-copyright {
+    padding-top: 30px;
+    border-top: 1px solid rgba($f-white, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: rgba($f-white, 0.4);
+    font-size: 0.85rem;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .legal-links {
+      display: flex;
+      gap: 20px;
+      a {
+        color: inherit;
+        text-decoration: none;
+        &:hover { color: $f-white; }
+      }
+    }
+  }
+}
