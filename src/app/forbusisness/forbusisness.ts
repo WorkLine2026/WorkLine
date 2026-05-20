@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, PLATFORM_ID, Inject, afterNextRender } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 interface IFormData {
   companyName: string;
@@ -19,19 +20,13 @@ interface CounterConfig {
   selector: 'app-forbusisness',
   imports: [],
   templateUrl: './forbusisness.html',
-  styleUrls: ['./forbusisness.scss']  
+  styleUrls: ['./forbusisness.scss']
 })
 export class Forbusisness {
-  // Component properties and lifecycle
   title = 'WorkLine Business';
 
-  ngOnInit() {
-    this.initBusinessPage();
-  }
-
-  private initBusinessPage(): void {
-    // Initialize all features after view init
-    setTimeout(() => {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    afterNextRender(() => {
       this.initNav();
       this.initCounters();
       this.initScrollReveal();
@@ -39,12 +34,9 @@ export class Forbusisness {
       this.initContactForm();
       this.initHeroParallax();
       this.addShakeAnimation();
-    }, 100);
+    });
   }
 
-  // ============================================
-  // NAV — scroll behavior + mobile menu
-  // ============================================
   private initNav(): void {
     const nav = document.getElementById('nav');
     const burger = document.getElementById('navBurger');
@@ -63,33 +55,30 @@ export class Forbusisness {
     window.addEventListener('scroll', updateNavScroll, { passive: true });
     updateNavScroll();
 
-    // Mobile menu toggle
     let isOpen = false;
     burger.addEventListener('click', () => {
       isOpen = !isOpen;
       mobile.classList.toggle('open', isOpen);
-      
+
       const spans = burger.querySelectorAll('span');
       if (spans.length === 3) {
-        spans[0].style.transform = isOpen ? 'rotate(45deg) translate(5px, 5px)' : '';
-        spans[1].style.opacity = isOpen ? '0' : '';
-        spans[2].style.transform = isOpen ? 'rotate(-45deg) translate(5px, -5px)' : '';
+        (spans[0] as HTMLElement).style.transform = isOpen ? 'rotate(45deg) translate(5px, 5px)' : '';
+        (spans[1] as HTMLElement).style.opacity = isOpen ? '0' : '';
+        (spans[2] as HTMLElement).style.transform = isOpen ? 'rotate(-45deg) translate(5px, -5px)' : '';
       }
     });
 
-    // Close on outside click
     document.addEventListener('click', (e: MouseEvent) => {
       if (isOpen && !nav.contains(e.target as Node)) {
         mobile.classList.remove('open');
         isOpen = false;
         const spans = burger.querySelectorAll('span');
-        spans[0].style.transform = '';
-        spans[1].style.opacity = '';
-        spans[2].style.transform = '';
+        (spans[0] as HTMLElement).style.transform = '';
+        (spans[1] as HTMLElement).style.opacity = '';
+        (spans[2] as HTMLElement).style.transform = '';
       }
     });
 
-    // Smooth scroll links
     document.querySelectorAll<HTMLAnchorElement>('a[href^="#"]').forEach(link => {
       link.addEventListener('click', (e: MouseEvent) => {
         const href = link.getAttribute('href');
@@ -106,9 +95,6 @@ export class Forbusisness {
     });
   }
 
-  // ============================================
-  // COUNTER ANIMATOR
-  // ============================================
   private initCounters(): void {
     const elements = document.querySelectorAll<HTMLElement>('[data-target]');
     if (elements.length === 0) return;
@@ -154,9 +140,6 @@ export class Forbusisness {
     requestAnimationFrame(tick);
   }
 
-  // ============================================
-  // SCROLL REVEAL
-  // ============================================
   private initScrollReveal(): void {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
@@ -168,7 +151,7 @@ export class Forbusisness {
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
     const selectors = [
-      '.pain-card', '.how-step', '.sector-card', 
+      '.pain-card', '.how-step', '.sector-card',
       '.pricing-card', '.testi-card', '.faq-item',
       '.channel-link', '.section-header'
     ];
@@ -182,9 +165,6 @@ export class Forbusisness {
     });
   }
 
-  // ============================================
-  // FAQ ACCORDION
-  // ============================================
   private initFAQ(): void {
     const items = document.querySelectorAll<HTMLElement>('.faq-item');
     items.forEach(item => {
@@ -199,9 +179,6 @@ export class Forbusisness {
     });
   }
 
-  // ============================================
-  // CONTACT FORM
-  // ============================================
   private initContactForm(): void {
     const form = document.getElementById('contactForm') as HTMLElement;
     const success = document.getElementById('contactSuccess') as HTMLElement;
@@ -211,7 +188,6 @@ export class Forbusisness {
 
     submitBtn.addEventListener('click', () => this.handleFormSubmit(form, success, submitBtn));
 
-    // Real-time validation
     const inputs = form.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
       'input, textarea, select'
     );
@@ -233,14 +209,13 @@ export class Forbusisness {
     submitBtn.textContent = 'იგზავნება...';
     submitBtn.disabled = true;
 
-    // Simulate API call
     setTimeout(() => {
       form.style.display = 'none';
       success.style.display = 'flex';
       success.style.flexDirection = 'column';
       success.style.alignItems = 'center';
       success.style.justifyContent = 'center';
-      
+
       console.log('Form submitted:', data);
       submitBtn.textContent = 'გაგზავნილია';
     }, 1200);
@@ -296,9 +271,6 @@ export class Forbusisness {
     setTimeout(() => { el.style.animation = ''; }, 400);
   }
 
-  // ============================================
-  // HERO PARALLAX
-  // ============================================
   private initHeroParallax(): void {
     const orb1 = document.querySelector<HTMLElement>('.hero__orb--1');
     const orb2 = document.querySelector<HTMLElement>('.hero__orb--2');
@@ -316,9 +288,6 @@ export class Forbusisness {
     window.addEventListener('mousemove', onMouseMove, { passive: true });
   }
 
-  // ============================================
-  // UTILITIES
-  // ============================================
   private addShakeAnimation(): void {
     const style = document.createElement('style');
     style.textContent = `
