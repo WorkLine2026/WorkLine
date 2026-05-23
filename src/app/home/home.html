@@ -1,5 +1,4 @@
-
-  <section class="hero">
+<section class="hero">
     <div class="hero-inner">
       <div class="hero-badge">
         <span class="badge-dot"></span>
@@ -17,8 +16,10 @@
       </p>
 
       <div class="hero-cta-row">
-        <a href="#companies" class="btn-primary">მე კომპანია ვარ →</a>
-        <a (click)="showRegistration = true; $event.preventDefault()" class="btn-outline">მე კადრი ვარ →</a>
+        <a (click)="showChooseRole = true; $event.preventDefault()" class="btn-primary">
+          მე კომპანია ვარ →
+        </a>
+        <a (click)="showChooseRole = true; $event.preventDefault()" class="btn-outline">მე კადრი ვარ →</a>
       </div>
 
       <div class="hero-stats">
@@ -135,7 +136,8 @@
         </div>
       </div>
 
-      <a href="#register" class="btn-primary">დარეგისტრირდი კადრად →</a>
+      <a  class="btn-primary" (click)="showChooseRole = true; $event.preventDefault()">დარეგისტრირდი →</a>
+    
     </div>
   </section>
 
@@ -152,7 +154,7 @@
                 ტრადიციული სააგენტოები ნელია. WorkLine სისწრაფეზე და სანდოობაზეა აგებული.
               </p>
             </div>
-            <a href="#contact" class="btn-gold">დაგვიკავშირდით →</a>
+            <a routerLink="contact" class="btn-gold">დაგვიკავშირდით →</a>
           </div>
 
           <div class="why-cards">
@@ -244,14 +246,26 @@
         <h2>მზად ხართ დასაწყებად?</h2>
         <p>კომპანია ხართ ან კადრი — WorkLine თქვენთვის მუშაობს.</p>
         <div class="cta-btns">
-          <a href="#register" class="btn-white">დარეგისტრირდი →</a>
+          <a  class="btn-white" (click)="showChooseRole = true; $event.preventDefault()">დარეგისტრირდი →</a>
           <a href="tel:+995" class="btn-outline-white">დაგვიკავშირდით</a>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- MODALS -->
+  <app-choose-role
+    *ngIf="showChooseRole"
+    (closed)="showChooseRole = false"
+    (roleSelected)="onRoleSelected($event)">
+  </app-choose-role>
+
   <app-personal-component
     *ngIf="showRegistration"
     (closed)="showRegistration = false">
   </app-personal-component>
-  
+
+  <app-iamcompany
+    *ngIf="showCompanyRegistration"
+    (closed)="showCompanyRegistration = false">
+  </app-iamcompany>

@@ -16,12 +16,11 @@
       <li><a routerLink="/how-it-works" routerLinkActive="active">როგორ მუშაობს</a></li>
       <li><a routerLink="/candidates" routerLinkActive="active">კანდიდატები</a></li>
       <li><a routerLink="/forbusiness" routerLinkActive="active">ბიზნესისთვის</a></li>
-      <!-- <li><a routerLink="/about" routerLinkActive="active">ჩვენ შესახებ</a></li> -->
     </ul>
 
     <div class="wl-navbar__actions">
-      <a routerLink="/login" class="btn-ghost">შესვლა</a>
-      <a routerLink="/register" class="btn-primary">
+      <a class="btn-ghost">შესვლა</a>
+      <a class="btn-primary full" (click)="showChooseRole = true; $event.preventDefault()">
         <span>რეგისტრაცია</span>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -29,9 +28,9 @@
       </a>
     </div>
 
-    <button 
-      class="wl-navbar__burger" 
-      (click)="toggleMenu()" 
+    <button
+      class="wl-navbar__burger"
+      (click)="toggleMenu()"
       [attr.aria-expanded]="menuOpen"
       aria-label="მენიუ">
       <span></span>
@@ -44,7 +43,7 @@
 
 <div class="wl-drawer" [class.open]="menuOpen">
   <div class="wl-drawer__backdrop" (click)="closeMenu()"></div>
-  
+
   <div class="wl-drawer__panel">
     <div class="wl-drawer__header">
       <span class="logo-text">Work<strong>Line</strong></span>
@@ -53,16 +52,15 @@
     <ul class="wl-drawer__nav">
       <li><a routerLink="/how-it-works" (click)="closeMenu()" routerLinkActive="active">როგორ მუშაობს</a></li>
       <li><a routerLink="/candidates" (click)="closeMenu()" routerLinkActive="active">კანდიდატები</a></li>
-      <li><a routerLink="/for-business" (click)="closeMenu()" routerLinkActive="active">ბიზნესისთვის</a></li>
-      <li><a routerLink="/about" (click)="closeMenu()" routerLinkActive="active">ჩვენ შესახებ</a></li>
+      <li><a routerLink="/forbusiness" (click)="closeMenu()" routerLinkActive="active">ბიზნესისთვის</a></li>
     </ul>
 
     <div class="wl-drawer__footer">
       <div class="wl-drawer__actions">
         <a routerLink="/login" (click)="closeMenu()" class="btn-ghost full">შესვლა</a>
-        <a routerLink="/register" (click)="closeMenu()" class="btn-primary full">რეგისტრაცია</a>
+        <a class="btn-primary full" (click)="openChooseRole($event); closeMenu()">რეგისტრაცია</a>
       </div>
-      
+
       <div class="logocenter">
         <span class="logo-mark">
           <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
@@ -75,5 +73,18 @@
     </div>
   </div>
 </div>
+
+<app-choose-role
+  *ngIf="showChooseRole"
+  (closed)="showChooseRole = false"
+  (roleSelected)="onRoleSelected($event)">
+</app-choose-role>
+
+<app-registercompany
+  *ngIf="showCompanyRegistration"
+  (closed)="showCompanyRegistration = false">
+</app-registercompany>
+
+
 
 <div class="wl-navbar__spacer"></div>

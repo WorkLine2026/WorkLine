@@ -1,16 +1,21 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { ChooseRole } from '../choose-role/choose-role';
+import { Registercompany } from '../registercompany/registercompany';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, ChooseRole, Registercompany],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
 export class Navbar implements OnInit, OnDestroy {
   isScrolled = false;
   menuOpen = false;
+  showChooseRole = false;
+  showRegistration = false;
+  showCompanyRegistration = false;
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
@@ -66,6 +71,19 @@ export class Navbar implements OnInit, OnDestroy {
       document.body.style.overflow = '';
       document.body.style.width = '';
       window.scrollTo(0, parseInt(scrollY || '0') * -1);
+    }
+  }
+
+  openChooseRole(event: Event): void {
+    event.preventDefault();
+    this.showChooseRole = true;
+  }
+
+  onRoleSelected(role: 'company' | 'worker') {
+    if (role === 'company') {
+      this.showCompanyRegistration = true;
+    } else {
+      this.showRegistration = true;
     }
   }
 }

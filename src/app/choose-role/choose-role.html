@@ -1,0 +1,37 @@
+<div class="cr-overlay">
+  <div class="cr-backdrop" (click)="close()"></div>
+
+  <div class="cr-modal">
+    <button class="cr-close" (click)="close()">✕</button>
+
+    <div class="cr-header">
+      <div class="cr-logo">W</div>
+      <h2 class="cr-title">რეგისტრაცია</h2>
+      <p class="cr-sub">აირჩიე შენი როლი WorkLine-ში</p>
+    </div>
+
+    <div class="cr-cards">
+      <button class="cr-card cr-card--company" (click)="selectRole('company')">
+        <div class="cr-card-icon">🏢</div>
+        <div class="cr-card-body">
+          <h3>კომპანია ვარ</h3>
+          <p>გინდა სწრაფად იპოვო გადამოწმებული კადრი</p>
+        </div>
+        <span class="cr-arrow">→</span>
+      </button>
+
+      <div class="cr-divider">
+        <span>ან</span>
+      </div>
+
+      <button class="cr-card cr-card--worker" (click)="selectRole('worker')">
+        <div class="cr-card-icon">👤</div>
+        <div class="cr-card-body">
+          <h3>კადრი ვარ</h3>
+          <p>გინდა იმუშაო შენ გრაფიკზე და მიიღო ანაზღაურება</p>
+        </div>
+        <span class="cr-arrow">→</span>
+      </button>
+    </div>
+  </div>
+</div>

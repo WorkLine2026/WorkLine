@@ -1,0 +1,256 @@
+/* ═══════════════════════════════════════════
+   company-component.scss
+   Same design tokens as personal-component
+   ═══════════════════════════════════════════ */
+
+$green:      #1a7a4a;
+$green-lt:   #e6f4ed;
+$gray-50:    #f9f9f9;
+$gray-100:   #f1f1f1;
+$gray-200:   #e0e0e0;
+$gray-400:   #9e9e9e;
+$gray-600:   #555;
+$gray-800:   #222;
+$red-lt:     #fdecea;
+$red:        #c0392b;
+$radius:     12px;
+$radius-sm:  8px;
+$trans:      .18s ease;
+
+/* ── Scene / Modal ── */
+.scene {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: #fff;
+  border-radius: $radius;
+  width: 100%; max-width: 520px;
+  max-height: 92dvh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 24px 60px rgba(0,0,0,.18);
+}
+
+/* ── Progress bar ── */
+.prog-bg {
+  height: 4px;
+  background: $gray-200;
+  border-radius: $radius $radius 0 0;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  background: $green;
+  transition: width .35s ease;
+}
+
+/* ── Close button ── */
+.modal-close {
+  position: absolute; top: 12px; right: 14px;
+  background: none; border: none;
+  font-size: 16px; color: $gray-400;
+  cursor: pointer; line-height: 1; padding: 4px;
+  &:hover { color: $gray-800; }
+}
+
+/* ── Step dots ── */
+.step-nav {
+  display: flex; align-items: center; gap: 6px;
+  padding: 14px 20px 0;
+}
+.dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: $gray-200;
+  transition: background $trans, transform $trans;
+  &.active  { background: $green; transform: scale(1.25); }
+  &.done    { background: lighten($green, 30%); }
+}
+.dot-label {
+  margin-left: auto;
+  font-size: 12px; color: $gray-400;
+}
+
+/* ── Modal body ── */
+.mbody {
+  padding: 16px 20px 24px;
+}
+
+/* ── Typography ── */
+.slabel {
+  font-size: 11px; font-weight: 600; letter-spacing: .05em;
+  text-transform: uppercase; color: $green;
+  margin: 0 0 4px;
+}
+.stitle {
+  font-size: 18px; font-weight: 700; color: $gray-800;
+  margin: 0 0 16px;
+}
+
+/* ── Layout helpers ── */
+.row2 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+  @media (max-width: 420px) { grid-template-columns: 1fr; }
+}
+
+/* ── Fields ── */
+.field {
+  display: flex; flex-direction: column; gap: 5px;
+  margin-bottom: 12px;
+
+  label {
+    font-size: 12px; font-weight: 600; color: $gray-600;
+  }
+  input, select, textarea {
+    border: 1.5px solid $gray-200;
+    border-radius: $radius-sm;
+    padding: 8px 10px;
+    font-size: 14px; color: $gray-800;
+    outline: none; transition: border $trans;
+    background: #fff;
+    &:focus { border-color: $green; }
+  }
+  textarea {
+    resize: vertical; min-height: 80px; font-family: inherit;
+  }
+  &.has-error input,
+  &.has-error select,
+  &.has-error textarea { border-color: $red; background: $red-lt; }
+}
+
+.opt-label { color: $gray-400; font-weight: 400; margin-left: 4px; }
+
+/* ── Chip group ── */
+.chip-group {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.chip {
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1.5px solid $gray-200;
+  font-size: 13px; color: $gray-600;
+  cursor: pointer; user-select: none;
+  transition: all $trans;
+  &:hover  { border-color: $green; color: $green; }
+  &.active { border-color: $green; background: $green-lt; color: $green; font-weight: 600; }
+}
+
+/* ── Availability / selection cards ── */
+.avail-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;
+  @media (max-width: 380px) { grid-template-columns: 1fr; }
+}
+.medbook-grid { grid-template-columns: repeat(3, 1fr); }
+.avail-card {
+  border: 1.5px solid $gray-200;
+  border-radius: $radius-sm;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all $trans;
+  &:hover  { border-color: $green; }
+  &.active { border-color: $green; background: $green-lt; }
+}
+.av-t { font-size: 13px; font-weight: 700; margin: 0 0 2px; color: $gray-800; }
+.av-s { font-size: 11px; color: $gray-400; margin: 0; }
+
+/* ── Summary preview (step 5) ── */
+.summary-preview {
+  background: $gray-50;
+  border: 1px solid $gray-200;
+  border-radius: $radius-sm;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.sp-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 5px 0;
+  border-bottom: 1px solid $gray-100;
+  &:last-child { border-bottom: none; }
+}
+.sp-k { font-size: 12px; color: $gray-400; flex-shrink: 0; margin-right: 8px; }
+.sp-v { font-size: 13px; font-weight: 600; color: $gray-800; text-align: right; }
+
+/* ── Agree checkbox row ── */
+.agree-row {
+  display: flex; align-items: flex-start; gap: 8px;
+  font-size: 13px; color: $gray-600; cursor: pointer;
+  margin-top: 12px;
+  input[type="checkbox"] { margin-top: 2px; accent-color: $green; }
+  a { color: $green; text-decoration: underline; }
+}
+
+/* ── Error message ── */
+.err-msg {
+  font-size: 12px; color: $red; background: $red-lt;
+  border-radius: $radius-sm; padding: 8px 10px;
+  margin-top: 8px; display: none;
+  &.show { display: block; }
+}
+
+/* ── Navigation buttons ── */
+.btn-row {
+  display: flex; gap: 10px; margin-top: 18px;
+}
+.btn-back {
+  display: flex; align-items: center; gap: 4px;
+  padding: 10px 16px;
+  border: 1.5px solid $gray-200; border-radius: $radius-sm;
+  background: #fff; font-size: 14px; color: $gray-600;
+  cursor: pointer; transition: all $trans;
+  &:hover { border-color: $gray-400; color: $gray-800; }
+}
+.btn-next {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 11px 20px;
+  border-radius: $radius-sm; border: none;
+  background: $green; color: #fff;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: background $trans, transform $trans;
+  &:hover  { background: darken($green, 8%); }
+  &:active { transform: scale(.98); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-5px); }
+  40%       { transform: translateX(5px); }
+  60%       { transform: translateX(-3px); }
+  80%       { transform: translateX(3px); }
+}
+.shake { animation: shake .4s ease; }
+
+/* ── Step animations ── */
+@keyframes slideIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: none; } }
+@keyframes slideInBack { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: none; } }
+.anim-forward { animation: slideIn .25s ease; }
+.anim-back    { animation: slideInBack .25s ease; }
+
+/* ── Success screen ── */
+.success-modal .mbody { padding: 24px 24px 32px; }
+.success-wrap { display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+.s-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: $green-lt;
+  display: flex; align-items: center; justify-content: center;
+  color: $green; margin-bottom: 14px;
+}
+.s-title { font-size: 20px; font-weight: 800; color: $gray-800; margin: 0 0 6px; }
+.s-sub   { font-size: 14px; color: $gray-400; margin: 0 0 16px; line-height: 1.5; }
+
+.s-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 18px; }
+.s-chip  {
+  padding: 4px 12px; border-radius: 999px;
+  background: $gray-100; font-size: 12px; color: $gray-600; font-weight: 600;
+}
+
+.summary-table { width: 100%; margin-bottom: 20px; }
+.sr { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid $gray-100; }
+.sk { font-size: 12px; color: $gray-400; }
+.sv { font-size: 13px; font-weight: 600; color: $gray-800; }

@@ -6,6 +6,12 @@ import { HowItWorksComponent } from './how-it-works-component/how-it-works-compo
 import { CandidatesComponent } from './candidates/candidates';
 import { Forbusisness } from './forbusisness/forbusisness';
 import { PersonalComponent } from './personal-component/personal-component';
+import { combineLatest } from 'rxjs';
+import { Iamcompany } from './iamcompany/iamcompany';
+import { Contact } from './contact/contact';
+import { ChooseRole } from './choose-role/choose-role';
+import { Registercompany } from './registercompany/registercompany';
+import { Registerperson } from './registerperson/registerperson';
 
 export const routes: Routes = [
     {
@@ -32,5 +38,20 @@ export const routes: Routes = [
     },
     {
         path: "personal-component", component:PersonalComponent
+    },
+    {
+        path: "iamcompany", component:Iamcompany
+    },
+    {
+        path: "contact", component:Contact
+    },
+    {
+        path: "choose-role", component:ChooseRole
+    },
+    {
+        path: "registercompany", component: Registercompany
+    },
+    {
+        path: "registerperon", component:Registerperson
     }
 ];

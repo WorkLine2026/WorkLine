@@ -1,0 +1,102 @@
+<div class="ic-overlay">
+  <div class="ic-backdrop" (click)="close()"></div>
+
+  <div class="ic-modal">
+
+    <div class="ic-header">
+      <div class="ic-steps">
+        <div class="ic-step-bar" [class.active]="currentStep >= 1" [class.done]="currentStep > 1"></div>
+        <div class="ic-step-bar" [class.active]="currentStep >= 2"></div>
+      </div>
+
+      <div class="ic-header-top">
+        <div class="ic-logo"><span>W</span></div>
+        <button class="ic-close" (click)="close()">✕</button>
+      </div>
+
+      <div class="ic-header-text">
+        <p class="ic-step-label">{{ currentStep === 1 ? 'ნაბიჯი 1 / 2' : 'ნაბიჯი 2 / 2' }}</p>
+        <h2 class="ic-title">{{ currentStep === 1 ? 'კომპანიის ინფო' : 'ანგარიშის შექმნა' }}</h2>
+        <p class="ic-sub">{{ currentStep === 1 ? 'შეავსეთ კომპანიის ძირითადი მონაცემები' : 'შეიყვანეთ საკონტაქტო ინფორმაცია' }}</p>
+      </div>
+    </div>
+
+    <div class="ic-body">
+
+      <div *ngIf="currentStep === 1" class="ic-step">
+        <div class="ic-field">
+          <label>კომპანიის სახელი</label>
+          <input type="text" [(ngModel)]="step1.name" placeholder="მაგ. შპს ალფა">
+        </div>
+        <div class="ic-field">
+          <label>საიდენტიფიკაციო კოდი</label>
+          <input type="text" [(ngModel)]="step1.code" placeholder="123456789">
+        </div>
+        <div class="ic-field-row">
+          <div class="ic-field">
+            <label>სფერო</label>
+            <div class="ic-select-wrap">
+              <select [(ngModel)]="step1.sector">
+                <option value="">აირჩიეთ</option>
+                <option *ngFor="let s of sectors" [value]="s">{{ s }}</option>
+              </select>
+              <span class="ic-chevron">▾</span>
+            </div>
+          </div>
+          <div class="ic-field">
+            <label>ქალაქი</label>
+            <div class="ic-select-wrap">
+              <select [(ngModel)]="step1.city">
+                <option value="">აირჩიეთ</option>
+                <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
+              </select>
+              <span class="ic-chevron">▾</span>
+            </div>
+          </div>
+        </div>
+        <button class="ic-btn-primary" (click)="goNext()">
+          გაგრძელება <span class="ic-btn-arrow">→</span>
+        </button>
+      </div>
+
+      <div *ngIf="currentStep === 2" class="ic-step">
+        <button class="ic-back" (click)="goBack()">← უკან</button>
+        <div class="ic-field">
+          <label>საკონტაქტო პირის სახელი</label>
+          <input type="text" [(ngModel)]="step2.contactName" placeholder="სახელი გვარი">
+        </div>
+        <div class="ic-field">
+          <label>ტელეფონი</label>
+          <input type="tel" [(ngModel)]="step2.phone" placeholder="+995 5XX XXX XXX">
+        </div>
+        <div class="ic-field">
+          <label>ელ-ფოსტა</label>
+          <input type="email" [(ngModel)]="step2.email" placeholder="company@email.com">
+        </div>
+        <div class="ic-field">
+          <label>პაროლი</label>
+          <div class="ic-pass-wrap">
+            <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="step2.password" placeholder="მინიმუმ 8 სიმბოლო">
+            <button class="ic-eye" (click)="showPassword = !showPassword" type="button">
+              {{ showPassword ? '🙈' : '👁' }}
+            </button>
+          </div>
+        </div>
+        <div class="ic-field">
+          <label>გაიმეორეთ პაროლი</label>
+          <div class="ic-pass-wrap">
+            <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="step2.confirmPassword" placeholder="••••••••">
+            <button class="ic-eye" (click)="showConfirmPassword = !showConfirmPassword" type="button">
+              {{ showConfirmPassword ? '🙈' : '👁' }}
+            </button>
+          </div>
+        </div>
+        <button class="ic-btn-primary" (click)="submit()">რეგისტრაცია ✓</button>
+        <p class="ic-terms">
+          რეგისტრაციით ეთანხმებით <span>სერვისის პირობებს</span> და <span>კონფიდენციალურობის პოლიტიკას</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>

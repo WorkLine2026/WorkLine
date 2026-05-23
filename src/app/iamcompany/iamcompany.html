@@ -1,0 +1,406 @@
+<div class="scene">
+
+  <div class="modal" *ngIf="currentStep >= 0 && !submitted">
+
+    <!-- Progress bar -->
+    <div class="prog-bg">
+      <div class="prog-fill" [style.width.%]="progress"></div>
+    </div>
+    <button class="modal-close" (click)="closed.emit()" type="button">✕</button>
+
+    <!-- Step dots -->
+    <div class="step-nav">
+      <ng-container *ngFor="let label of stepLabels; let i = index">
+        <div class="dot"
+             [class.done]="i < currentStep"
+             [class.active]="i === currentStep"
+             [title]="label"></div>
+      </ng-container>
+      <span class="dot-label">{{ currentStep + 1 }} / {{ totalSteps }}</span>
+    </div>
+
+    <div class="mbody">
+
+      <!-- ── STEP 1: Company Info ── -->
+      <div *ngIf="currentStep === 0" [class.anim-forward]="direction === 'forward'" [class.anim-back]="direction === 'back'">
+        <p class="slabel">ნაბიჯი 1 / 5 — კომპანიის ინფო</p>
+        <p class="stitle">გვიამბე კომპანიის შესახებ</p>
+
+        <div class="field" [class.has-error]="errors['companyName']">
+          <label>კომპანიის სახელი</label>
+          <input type="text" placeholder="მაგ. ABC სუპერმარკეტი" [(ngModel)]="data.companyName">
+        </div>
+
+        <div class="row2">
+          <div class="field" [class.has-error]="errors['sector']">
+            <label>სექტორი</label>
+            <select [(ngModel)]="data.sector">
+              <option value="">აირჩიე...</option>
+              <option *ngFor="let s of sectorOptions" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>კომპანიის ზომა</label>
+            <select [(ngModel)]="data.companySize">
+              <option value="">აირჩიე...</option>
+              <option *ngFor="let s of companySizeOptions" [value]="s">{{ s }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="field" [class.has-error]="errors['contactName']">
+            <label>საკონტაქტო პირი</label>
+            <input type="text" placeholder="სახელი გვარი" [(ngModel)]="data.contactName">
+          </div>
+          <div class="field">
+            <label>თანამდებობა</label>
+            <input type="text" placeholder="მაგ. HR მენეჯერი" [(ngModel)]="data.contactRole">
+          </div>
+        </div>
+
+        <div class="row2">
+          <div class="field" [class.has-error]="errors['phone']">
+            <label>ტელეფონი</label>
+            <input type="tel" placeholder="+995 5XX XXX XXX" [(ngModel)]="data.phone">
+          </div>
+          <div class="field">
+            <label>ელ-ფოსტა</label>
+            <input type="email" placeholder="info@company.ge" [(ngModel)]="data.email">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>საიდენტიფიკაციო კოდი <span class="opt-label">(სურვილისამებრ)</span></label>
+          <input type="text" placeholder="000000000" maxlength="9" [(ngModel)]="data.taxId">
+        </div>
+
+        <div class="err-msg" [class.show]="errors['companyName'] || errors['sector'] || errors['contactName'] || errors['phone']">
+          გთხოვთ შეავსოთ კომპანიის სახელი, სექტორი, საკონტაქტო პირი და ტელეფონი
+        </div>
+      </div>
+
+      <!-- ── STEP 2: Position & Requirements ── -->
+      <div *ngIf="currentStep === 1" [class.anim-forward]="direction === 'forward'" [class.anim-back]="direction === 'back'">
+        <p class="slabel">ნაბიჯი 2 / 5 — პოზიცია & მოთხოვნები</p>
+        <p class="stitle">რა კადრი გჭირდება?</p>
+
+        <div class="field" [class.has-error]="errors['positions']">
+          <label>სასურველი პოზიცია <span class="opt-label">(რამდენიც გინდა)</span></label>
+          <div class="chip-group">
+            <div class="chip"
+                 *ngFor="let p of positionOptions"
+                 [class.active]="isChipActive(data.positions, p)"
+                 (click)="toggleChip(data.positions, p)">{{ p }}</div>
+          </div>
+        </div>
+
+        <div class="row2" style="margin-top:.75rem">
+          <div class="field" [class.has-error]="errors['headcount']">
+            <label>რამდენი კადრი?</label>
+            <select [(ngModel)]="data.headcount">
+              <option value="">აირჩიე...</option>
+              <option *ngFor="let h of headcountOptions" [value]="h">{{ h }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>გამოცდილება</label>
+            <select [(ngModel)]="data.expRequired">
+              <option value="">ნებისმიერი</option>
+              <option *ngFor="let e of expOptions" [value]="e">{{ e }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:.5rem">
+          <label>სასურველი ენები</label>
+          <div class="chip-group">
+            <div class="chip"
+                 *ngFor="let l of langOptions"
+                 [class.active]="isChipActive(data.langs, l)"
+                 (click)="toggleChip(data.langs, l)">{{ l }}</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>სასურველი სერტიფიკატები <span class="opt-label">(სურვილისამებრ)</span></label>
+          <div class="chip-group">
+            <div class="chip"
+                 *ngFor="let c of certOptions"
+                 [class.active]="isChipActive(data.certsRequired, c)"
+                 (click)="toggleChip(data.certsRequired, c)">{{ c }}</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>დამატებითი მოთხოვნები <span class="opt-label">(სურვილისამებრ)</span></label>
+          <textarea placeholder="მაგ. სამედიცინო წიგნაკი, სამძღოლო მოწმობა, კონკრეტული უნარები..." [(ngModel)]="data.requirements"></textarea>
+        </div>
+
+        <div class="err-msg" [class.show]="errors['positions'] || errors['headcount']">
+          გთხოვთ აირჩიოთ პოზიცია და კადრების რაოდენობა
+        </div>
+      </div>
+
+      <!-- ── STEP 3: Terms & Pay ── -->
+      <div *ngIf="currentStep === 2" [class.anim-forward]="direction === 'forward'" [class.anim-back]="direction === 'back'">
+        <p class="slabel">ნაბიჯი 3 / 5 — პირობები & ანაზღაურება</p>
+        <p class="stitle">სამუშაო პირობები</p>
+
+        <div class="field" [class.has-error]="errors['duration']">
+          <label>სამუშაოს ხანგრძლივობა</label>
+          <div class="avail-grid">
+            <div class="avail-card"
+                 *ngFor="let d of durationOptions"
+                 [class.active]="data.duration === d.v"
+                 (click)="data.duration = d.v">
+              <p class="av-t">{{ d.t }}</p>
+              <p class="av-s">{{ d.s }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:.75rem">
+          <label>სამუშაო საათები</label>
+          <div class="chip-group">
+            <div class="chip"
+                 *ngFor="let s of scheduleOptions"
+                 [class.active]="isChipActive(data.schedule, s)"
+                 (click)="toggleChip(data.schedule, s)">{{ s }}</div>
+          </div>
+        </div>
+
+        <div class="row2" style="margin-top:.5rem">
+          <div class="field">
+            <label>ანაზღაურება (₾ / თვეში)</label>
+            <input type="number" placeholder="მაგ. 1200" [(ngModel)]="data.salaryFrom">
+          </div>
+          <div class="field">
+            <label>მაქს. ანაზღაურება <span class="opt-label">(სურვილისამებრ)</span></label>
+            <input type="number" placeholder="მაგ. 1800" [(ngModel)]="data.salaryTo">
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:.5rem">
+          <label>ანაზღაურების სქემა</label>
+          <div class="avail-grid medbook-grid">
+            <div class="avail-card"
+                 *ngFor="let p of payTypeOptions"
+                 [class.active]="data.payType === p.v"
+                 (click)="data.payType = p.v">
+              <p class="av-t">{{ p.t }}</p>
+              <p class="av-s" *ngIf="p.s">{{ p.s }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:.5rem">
+          <label>დამატებითი შეღავათები <span class="opt-label">(სურვილისამებრ)</span></label>
+          <div class="chip-group">
+            <div class="chip"
+                 *ngFor="let b of benefitOptions"
+                 [class.active]="isChipActive(data.benefits, b)"
+                 (click)="toggleChip(data.benefits, b)">{{ b }}</div>
+          </div>
+        </div>
+
+        <div class="err-msg" [class.show]="errors['duration']">
+          გთხოვთ მონიშნოთ სამუშაოს ხანგრძლივობა
+        </div>
+      </div>
+
+      <!-- ── STEP 4: Location & Start ── -->
+      <div *ngIf="currentStep === 3" [class.anim-forward]="direction === 'forward'" [class.anim-back]="direction === 'back'">
+        <p class="slabel">ნაბიჯი 4 / 5 — ადგილმდებარეობა & დაწყება</p>
+        <p class="stitle">სად და როდის?</p>
+
+        <div class="row2">
+          <div class="field" [class.has-error]="errors['city']">
+            <label>ქალაქი</label>
+            <select [(ngModel)]="data.city">
+              <option value="">აირჩიე...</option>
+              <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>რაიონი / უბანი <span class="opt-label">(სურვილისამებრ)</span></label>
+            <input type="text" placeholder="მაგ. ვაკე, ისანი..." [(ngModel)]="data.district">
+          </div>
+        </div>
+
+        <div class="field">
+          <label>სრული მისამართი <span class="opt-label">(სურვილისამებრ)</span></label>
+          <input type="text" placeholder="ქუჩა, N..." [(ngModel)]="data.address">
+        </div>
+
+        <div class="field" style="margin-top:.75rem" [class.has-error]="errors['startDate']">
+          <label>სამუშაოს დაწყება</label>
+          <div class="avail-grid">
+            <div class="avail-card"
+                 *ngFor="let s of startOptions"
+                 [class.active]="data.startDate === s.v"
+                 (click)="data.startDate = s.v">
+              <p class="av-t">{{ s.t }}</p>
+              <p class="av-s">{{ s.s }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:.75rem">
+          <label>კონკრეტული თარიღი <span class="opt-label">(სურვილისამებრ)</span></label>
+          <input type="date" [(ngModel)]="data.specificDate">
+        </div>
+
+        <div class="field" style="margin-top:.5rem">
+          <label>სამუშაო გარემო</label>
+          <div class="avail-grid medbook-grid">
+            <div class="avail-card"
+                 *ngFor="let e of envOptions"
+                 [class.active]="data.workEnv === e.v"
+                 (click)="data.workEnv = e.v">
+              <p class="av-t">{{ e.t }}</p>
+              <p class="av-s" *ngIf="e.s">{{ e.s }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="err-msg" [class.show]="errors['city'] || errors['startDate']">
+          გთხოვთ მონიშნოთ ქალაქი და სამუშაოს დაწყების თარიღი
+        </div>
+      </div>
+
+      <!-- ── STEP 5: Confirm ── -->
+      <div *ngIf="currentStep === 4" [class.anim-forward]="direction === 'forward'" [class.anim-back]="direction === 'back'">
+        <p class="slabel">ნაბიჯი 5 / 5 — დადასტურება</p>
+        <p class="stitle">გადახედე და გაგზავნე</p>
+
+        <div class="summary-preview">
+          <div class="sp-row">
+            <span class="sp-k">კომპანია</span>
+            <span class="sp-v">{{ data.companyName || '—' }}</span>
+          </div>
+          <div class="sp-row">
+            <span class="sp-k">სექტორი</span>
+            <span class="sp-v">{{ data.sector || '—' }}</span>
+          </div>
+          <div class="sp-row">
+            <span class="sp-k">საკონტაქტო</span>
+            <span class="sp-v">{{ data.contactName || '—' }} · {{ data.phone || '—' }}</span>
+          </div>
+          <div class="sp-row">
+            <span class="sp-k">პოზიცია</span>
+            <span class="sp-v">{{ data.positions.join(', ') || '—' }}</span>
+          </div>
+          <div class="sp-row">
+            <span class="sp-k">კადრების რ-ბა</span>
+            <span class="sp-v">{{ data.headcount || '—' }}</span>
+          </div>
+          <div class="sp-row">
+            <span class="sp-k">ხანგრძლივობა</span>
+            <span class="sp-v">{{ durationLabel(data.duration) }}</span>
+          </div>
+          <div class="sp-row">
+            <span class="sp-k">ანაზღაურება</span>
+            <span class="sp-v">{{ salaryDisplay }}</span>
+          </div>
+          <div class="sp-row">
+            <span class="sp-k">ქალაქი</span>
+            <span class="sp-v">{{ data.city || '—' }}</span>
+          </div>
+          <div class="sp-row">
+            <span class="sp-k">დაწყება</span>
+            <span class="sp-v">{{ startLabel(data.startDate) }}</span>
+          </div>
+          <div class="sp-row" *ngIf="data.benefits.length">
+            <span class="sp-k">შეღავათები</span>
+            <span class="sp-v">{{ data.benefits.join(', ') }}</span>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:1rem">
+          <label>დამატებითი შენიშვნა <span class="opt-label">(სურვილისამებრ)</span></label>
+          <textarea placeholder="სხვა ინფო WorkLine-ის გუნდისთვის..." [(ngModel)]="data.notes"></textarea>
+        </div>
+
+        <label class="agree-row">
+          <input type="checkbox" [(ngModel)]="data.agreed">
+          <span>ვეთანხმები WorkLine-ის <a href="#" target="_blank">პირობებს</a> და <a href="#" target="_blank">კონფიდენციალობის პოლიტიკას</a></span>
+        </label>
+
+        <div class="err-msg" [class.show]="errors['agreed']">
+          გთხოვთ დაეთანხმოთ პირობებს გაგზავნამდე
+        </div>
+      </div>
+
+      <!-- ── Navigation buttons ── -->
+      <div class="btn-row">
+        <button class="btn-back" *ngIf="currentStep > 0" type="button" (click)="back()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+          უკან
+        </button>
+        <button class="btn-next" type="button" (click)="next()" [class.shake]="shakeNext">
+          {{ currentStep === totalSteps - 1 ? 'გაგზავნა' : 'შემდეგი' }}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════
+       SUCCESS SCREEN
+  ════════════════════ -->
+  <div class="modal success-modal" *ngIf="submitted">
+    <div class="prog-bg">
+      <div class="prog-fill" style="width: 100%"></div>
+    </div>
+    <div class="mbody">
+      <div class="success-wrap">
+        <div class="s-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <p class="s-title">გმადლობთ, {{ data.companyName }}!</p>
+        <p class="s-sub">თქვენი მოთხოვნა მიღებულია.<br>WorkLine დაგიკავშირდებათ 24 საათის განმავლობაში.</p>
+
+        <div class="s-chips">
+          <span class="s-chip" *ngIf="data.city">📍 {{ data.city }}</span>
+          <span class="s-chip" *ngIf="data.headcount">👥 {{ data.headcount }}</span>
+          <span class="s-chip" *ngIf="data.duration">⏱ {{ durationLabel(data.duration) }}</span>
+          <span class="s-chip" *ngFor="let p of data.positions.slice(0, 2)">{{ p }}</span>
+        </div>
+
+        <div class="summary-table">
+          <div class="sr">
+            <span class="sk">კომპანია</span>
+            <span class="sv">{{ data.companyName }}</span>
+          </div>
+          <div class="sr">
+            <span class="sk">საკონტაქტო</span>
+            <span class="sv">{{ data.contactName || '—' }}</span>
+          </div>
+          <div class="sr">
+            <span class="sk">პოზიციები</span>
+            <span class="sv">{{ data.positions.slice(0, 3).join(', ') || '—' }}</span>
+          </div>
+          <div class="sr">
+            <span class="sk">კადრი</span>
+            <span class="sv">{{ data.headcount || '—' }}</span>
+          </div>
+          <div class="sr">
+            <span class="sk">ანაზღაურება</span>
+            <span class="sv">{{ salaryDisplay }}</span>
+          </div>
+          <div class="sr">
+            <span class="sk">დაწყება</span>
+            <span class="sv">{{ startLabel(data.startDate) }}</span>
+          </div>
+        </div>
+
+        <button class="btn-next" type="button" (click)="reset()">
+          ახალი მოთხოვნა
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
