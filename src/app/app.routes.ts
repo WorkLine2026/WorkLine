@@ -10,9 +10,10 @@ import { combineLatest } from 'rxjs';
 import { Iamcompany } from './iamcompany/iamcompany';
 import { Contact } from './contact/contact';
 import { ChooseRole } from './choose-role/choose-role';
-import { Registercompany } from './registercompany/registercompany';
+import { RegistercompanyComponent } from './registercompany/registercompany';
 import { Registerperson } from './registerperson/registerperson';
 import { Login, } from './login-in/login-in';
+import { CompanyProfileComponent } from './company-profile-component/company-profile-component';
 
 export const routes: Routes = [
     {
@@ -50,12 +51,15 @@ export const routes: Routes = [
         path: "choose-role", component:ChooseRole
     },
     {
-        path: "registercompany", component: Registercompany
+        path: "registercompany", component: RegistercompanyComponent
     },
     {
         path: "registerperon", component:Registerperson
     },
     {
         path: "login-in", component:Login
+    },
+    {
+        path: "company/profile", component:CompanyProfileComponent
     }
 ];

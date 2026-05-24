@@ -1,37 +1,70 @@
 import { Component, EventEmitter, Output, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+
+import { AuthService } from '../Service/auth.service';
+import { AuthStateService } from '../Service/auth-state.service';
 
 @Component({
   selector: 'app-login-in',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './login-in.html',
   styleUrl: './login-in.scss',
   encapsulation: ViewEncapsulation.None
 })
 export class Login {
-  @Output() closed = new EventEmitter<void>();
+  @Output() closed            = new EventEmitter<void>();
   @Output() registerRequested = new EventEmitter<void>();
-  @Output() forgotRequested = new EventEmitter<void>();
+  @Output() forgotRequested   = new EventEmitter<void>();
 
   role: 'worker' | 'company' = 'worker';
-  email = '';
-  password = '';
-  companyCode = '';
+  email            = '';
+  password         = '';
+  companyCode      = '';
   companyCodeError = '';
-  rememberMe = false;
-  showPassword = false;
-  submitted = false;
+  loginError       = '';
+  rememberMe       = false;
+  showPassword     = false;
+  submitted        = false;
+  isLoading        = false;
+
+  constructor(
+    private router:      Router,
+    private authService: AuthService,
+    private authState:   AuthStateService
+  ) {}
 
   submit(): void {
-    this.submitted = true;
+    this.submitted  = true;
+    this.loginError = '';
+
     if (!this.email || !this.password) return;
+
     if (this.role === 'company' && !/^\d{9}$/.test(this.companyCode)) {
       this.companyCodeError = 'საიდენტიფიკაციო კოდი უნდა შეიცავდეს ზუსტად 9 ციფრს';
       return;
     }
-    console.log('Login:', { role: this.role, email: this.email, companyCode: this.companyCode, rememberMe: this.rememberMe });
-    this.close();
+
+    this.isLoading = true;
+
+    this.authService.loginCompany({
+      email:              this.email.trim().toLowerCase(),
+      password:           this.password,
+      identificationCode: this.role === 'company' ? this.companyCode : undefined
+    }).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.authState.setSession(res.token, res.company);
+        this.closed.emit();
+        this.router.navigate(['/company/profile']);
+      },
+      error: (err: Error) => {
+        this.isLoading  = false;
+        this.loginError = err.message;
+      }
+    });
   }
 
   onForgotPassword(): void {

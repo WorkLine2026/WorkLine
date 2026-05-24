@@ -1,15 +1,16 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectorRef, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { ChooseRole } from '../choose-role/choose-role';
-import { Registercompany } from '../registercompany/registercompany';
+import { RegistercompanyComponent } from '../registercompany/registercompany';
 import { Registerperson } from '../registerperson/registerperson';
 import { Login } from '../login-in/login-in';
 import { Forgotpassword } from '../forgotpassword/forgotpassword';
+import { AuthStateService } from '../Service/auth-state.service';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, RouterLink, ChooseRole, Registercompany, Registerperson, Login, Forgotpassword],
+  imports: [CommonModule, RouterLink, ChooseRole, RegistercompanyComponent, Registerperson, Login, Forgotpassword],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
@@ -24,7 +25,9 @@ export class Navbar implements OnInit, OnDestroy {
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public authState: AuthStateService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -97,6 +100,12 @@ export class Navbar implements OnInit, OnDestroy {
     } else {
       this.showRegistration = true;
     }
+    this.cdr.detectChanges();
+  }
+
+  logout(): void {
+    this.authState.clearSession();
+    this.router.navigate(['/']);
     this.cdr.detectChanges();
   }
 }

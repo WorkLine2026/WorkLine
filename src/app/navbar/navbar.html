@@ -19,13 +19,24 @@
     </ul>
 
     <div class="wl-navbar__actions">
-      <a class="btn-ghost full" (click)="openLogin()">შესვლა</a>
-      <a class="btn-primary full" (click)="openChooseRole($event)">
-        <span>რეგისტრაცია</span>
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
+      <ng-container *ngIf="!authState.isLoggedIn()">
+        <a class="btn-ghost full" (click)="openLogin()">შესვლა</a>
+        <a class="btn-primary full" (click)="openChooseRole($event)">
+          <span>რეგისტრაცია</span>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+      </ng-container>
+
+      <ng-container *ngIf="authState.isLoggedIn()">
+        <a class="btn-ghost full" routerLink="/company/profile">
+          {{ authState.company()?.name }}
+        </a>
+        <a class="btn-primary full" (click)="logout()">
+          <span>გამოსვლა</span>
+        </a>
+      </ng-container>
     </div>
 
     <button
@@ -57,8 +68,17 @@
 
     <div class="wl-drawer__footer">
       <div class="wl-drawer__actions">
-        <a class="btn-ghost full" (click)="openLogin(); closeMenu()">შესვლა</a>
-        <a class="btn-primary full" (click)="openChooseRole($event); closeMenu()">რეგისტრაცია</a>
+        <ng-container *ngIf="!authState.isLoggedIn()">
+          <a class="btn-ghost full" (click)="openLogin(); closeMenu()">შესვლა</a>
+          <a class="btn-primary full" (click)="openChooseRole($event); closeMenu()">რეგისტრაცია</a>
+        </ng-container>
+
+        <ng-container *ngIf="authState.isLoggedIn()">
+          <a class="btn-ghost full" routerLink="/company/profile" (click)="closeMenu()">
+            {{ authState.company()?.name }}
+          </a>
+          <a class="btn-primary full" (click)="logout(); closeMenu()">გამოსვლა</a>
+        </ng-container>
       </div>
 
       <div class="logocenter">

@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Registercompany } from '../registercompany/registercompany';
+import { RegistercompanyComponent } from '../registercompany/registercompany';
 import { ChooseRole } from '../choose-role/choose-role';
 import { Registerperson } from '../registerperson/registerperson';
 @Component({
   selector: 'app-candidates',
   standalone: true,
-  imports: [CommonModule, FormsModule,ChooseRole, Registercompany, Registerperson],
+  imports: [CommonModule, FormsModule,ChooseRole, RegistercompanyComponent, Registerperson],
   templateUrl: './candidates.html',
   styleUrls: ['./candidates.scss'],
 })

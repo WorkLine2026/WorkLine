@@ -1,0 +1,109 @@
+<div class="cp-page">
+
+  <!-- Sidebar -->
+  <aside class="cp-sidebar">
+    <div class="cp-logo">
+      <div class="cp-logo-icon"><span>W</span></div>
+      <span class="cp-logo-text">WorkLine</span>
+    </div>
+
+    <nav class="cp-nav">
+      <a class="cp-nav-item active">
+        <span class="cp-nav-icon">🏢</span> პროფილი
+      </a>
+      <a class="cp-nav-item disabled">
+        <span class="cp-nav-icon">📋</span> შეთავაზებები
+        <span class="cp-soon">მალე</span>
+      </a>
+      <a class="cp-nav-item disabled">
+        <span class="cp-nav-icon">👥</span> კადრები
+        <span class="cp-soon">მალე</span>
+      </a>
+    </nav>
+
+    <button class="cp-logout" (click)="logout()">
+      <span>⬅</span> გამოსვლა
+    </button>
+  </aside>
+
+  <!-- Main -->
+  <main class="cp-main">
+
+    <!-- Header -->
+    <div class="cp-header">
+      <h1 class="cp-header-title">კომპანიის პროფილი</h1>
+      <p class="cp-header-sub">მართეთ თქვენი ანგარიშის ინფორმაცია</p>
+    </div>
+
+    <!-- Profile Card -->
+    <div class="cp-card cp-card--profile">
+
+      <!-- Avatar -->
+      <div class="cp-avatar-section">
+        <div class="cp-avatar-wrap">
+          <div class="cp-avatar" *ngIf="!profileImage">
+            {{ initials }}
+          </div>
+          <img class="cp-avatar-img" *ngIf="profileImage" [src]="profileImage" alt="profile">
+          <label class="cp-avatar-upload" title="სურათის ატვირთვა">
+            <input type="file" accept="image/*" (change)="onImageUpload($event)" hidden>
+            📷
+          </label>
+        </div>
+        <div class="cp-avatar-info">
+          <h2 class="cp-company-name">{{ company?.name }}</h2>
+          <span class="cp-badge">{{ company?.sector }}</span>
+        </div>
+      </div>
+
+      <div class="cp-divider"></div>
+
+      <!-- Info Grid -->
+      <div class="cp-info-grid">
+
+        <div class="cp-info-item">
+          <span class="cp-info-label">საიდენტიფიკაციო კოდი</span>
+          <span class="cp-info-value">{{ company?.identificationCode }}</span>
+        </div>
+
+        <div class="cp-info-item">
+          <span class="cp-info-label">ელ-ფოსტა</span>
+          <span class="cp-info-value">{{ company?.email }}</span>
+        </div>
+
+        <div class="cp-info-item">
+          <span class="cp-info-label">ტელეფონი</span>
+          <span class="cp-info-value">{{ company?.phone }}</span>
+        </div>
+
+        <div class="cp-info-item">
+          <span class="cp-info-label">ქალაქი</span>
+          <span class="cp-info-value">{{ company?.city }}</span>
+        </div>
+
+        <div class="cp-info-item">
+          <span class="cp-info-label">სფერო</span>
+          <span class="cp-info-value">{{ company?.sector }}</span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="cp-stats-row">
+      <div class="cp-stat-card">
+        <span class="cp-stat-num">0</span>
+        <span class="cp-stat-label">აქტიური შეთავაზება</span>
+      </div>
+      <div class="cp-stat-card">
+        <span class="cp-stat-num">0</span>
+        <span class="cp-stat-label">დასაქმებული კადრი</span>
+      </div>
+      <div class="cp-stat-card">
+        <span class="cp-stat-num">✓</span>
+        <span class="cp-stat-label">ვერიფიცირებული</span>
+      </div>
+    </div>
+
+  </main>
+</div>

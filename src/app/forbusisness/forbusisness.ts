@@ -1,6 +1,6 @@
 import { Component, PLATFORM_ID, Inject, afterNextRender } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Registercompany } from '../registercompany/registercompany';
+import { RegistercompanyComponent } from '../registercompany/registercompany';
 import { ChooseRole } from '../choose-role/choose-role';
 import { Registerperson } from '../registerperson/registerperson';
 import { FormsModule } from '@angular/forms';
@@ -22,7 +22,7 @@ interface CounterConfig {
 
 @Component({
   selector: 'app-forbusisness',
-  imports: [CommonModule, FormsModule, Registercompany, Registerperson, ChooseRole, RouterLink],
+  imports: [CommonModule, FormsModule, RegistercompanyComponent, Registerperson, ChooseRole, RouterLink],
   templateUrl: './forbusisness.html',
   styleUrls: ['./forbusisness.scss']
 })

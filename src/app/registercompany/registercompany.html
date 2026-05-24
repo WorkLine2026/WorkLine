@@ -3,105 +3,217 @@
 
   <div class="ic-modal">
 
+    <!-- Header -->
     <div class="ic-header">
       <div class="ic-steps">
         <div class="ic-step-bar" [class.active]="currentStep >= 1" [class.done]="currentStep > 1"></div>
-        <div class="ic-step-bar" [class.active]="currentStep >= 2"></div>
+        <div class="ic-step-bar" [class.active]="currentStep >= 2" [class.done]="currentStep > 2"></div>
+        <div class="ic-step-bar" [class.active]="currentStep >= 3"></div>
       </div>
 
       <div class="ic-header-top">
         <div class="ic-logo"><span>W</span></div>
-        <button class="ic-close" (click)="close()">✕</button>
+        <button class="ic-close" (click)="close()" type="button">✕</button>
       </div>
 
       <div class="ic-header-text">
-        <p class="ic-step-label">{{ currentStep === 1 ? 'ნაბიჯი 1 / 2' : 'ნაბიჯი 2 / 2' }}</p>
-        <h2 class="ic-title">{{ currentStep === 1 ? 'კომპანიის ინფო' : 'ანგარიშის შექმნა' }}</h2>
-        <p class="ic-sub">{{ currentStep === 1 ? 'შეავსეთ კომპანიის ძირითადი მონაცემები' : 'შეიყვანეთ საკონტაქტო ინფორმაცია' }}</p>
+        <p class="ic-step-label">
+          {{ currentStep === 1 ? 'ნაბიჯი 1 / 3' : currentStep === 2 ? 'ნაბიჯი 2 / 3' : 'ნაბიჯი 3 / 3' }}
+        </p>
+        <h2 class="ic-title">
+          {{ currentStep === 1 ? 'კომპანიის ინფო' : currentStep === 2 ? 'ანგარიშის შექმნა' : 'ვერიფიკაცია' }}
+        </h2>
+        <p class="ic-sub">
+          {{ currentStep === 1 ? 'შეავსეთ კომპანიის ძირითადი მონაცემები' :
+             currentStep === 2 ? 'შეიყვანეთ საკონტაქტო ინფორმაცია' :
+             'შეამოწმეთ თქვენი ელ-ფოსტა' }}
+        </p>
       </div>
     </div>
 
+    <!-- Body -->
     <div class="ic-body">
 
+      <!-- Step 1 -->
       <div *ngIf="currentStep === 1" class="ic-step">
-        <div class="ic-field">
+
+        <div class="ic-field" [class.ic-field--error]="errors1.name">
           <label>კომპანიის სახელი</label>
-          <input type="text" [(ngModel)]="step1.name" placeholder="მაგ. შპს ალფა">
+          <input type="text" [(ngModel)]="step1.name" placeholder="მაგ. შპს ალფა"
+            (input)="clearError('name', 1)">
+          <span class="ic-error" *ngIf="errors1.name">{{ errors1.name }}</span>
         </div>
-        <div class="ic-field">
+
+        <div class="ic-field" [class.ic-field--error]="errors1.identificationCode">
           <label>საიდენტიფიკაციო კოდი</label>
-          <input
-            type="text"
-            [(ngModel)]="step1.code"
-            placeholder="123456789"
-            maxlength="9"
-            (input)="step1.code = step1.code.replace(/\D/g, ''); codeError = ''"
-            [class.ic-input-error]="codeError">
-          <span class="ic-error" *ngIf="codeError">{{ codeError }}</span>
+          <input type="text" [(ngModel)]="step1.identificationCode" placeholder="123456789"
+            maxlength="9" (input)="onIdCodeInput()">
+          <span class="ic-error" *ngIf="errors1.identificationCode">{{ errors1.identificationCode }}</span>
         </div>
+
         <div class="ic-field-row">
-          <div class="ic-field">
+          <div class="ic-field" [class.ic-field--error]="errors1.sector">
             <label>სფერო</label>
             <div class="ic-select-wrap">
-              <select [(ngModel)]="step1.sector">
+              <select [(ngModel)]="step1.sector" (change)="clearError('sector', 1)">
                 <option value="">აირჩიეთ</option>
                 <option *ngFor="let s of sectors" [value]="s">{{ s }}</option>
               </select>
               <span class="ic-chevron">▾</span>
             </div>
+            <span class="ic-error" *ngIf="errors1.sector">{{ errors1.sector }}</span>
           </div>
-          <div class="ic-field">
+
+          <div class="ic-field" [class.ic-field--error]="errors1.city">
             <label>ქალაქი</label>
             <div class="ic-select-wrap">
-              <select [(ngModel)]="step1.city">
+              <select [(ngModel)]="step1.city" (change)="clearError('city', 1)">
                 <option value="">აირჩიეთ</option>
                 <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
               </select>
               <span class="ic-chevron">▾</span>
             </div>
+            <span class="ic-error" *ngIf="errors1.city">{{ errors1.city }}</span>
           </div>
         </div>
-        <button class="ic-btn-primary" (click)="goNext()">
+
+        <button class="ic-btn-primary" (click)="goNext()" type="button">
           გაგრძელება <span class="ic-btn-arrow">→</span>
         </button>
       </div>
 
+      <!-- Step 2 -->
       <div *ngIf="currentStep === 2" class="ic-step">
-        <button class="ic-back" (click)="goBack()">← უკან</button>
-        <div class="ic-field">
-          <label>საკონტაქტო პირის სახელი</label>
-          <input type="text" [(ngModel)]="step2.contactName" placeholder="სახელი გვარი">
-        </div>
-        <div class="ic-field">
+
+        <button class="ic-back" (click)="goBack()" type="button">← უკან</button>
+
+        <div class="ic-field" [class.ic-field--error]="errors2.phone">
           <label>ტელეფონი</label>
-          <input type="tel" [(ngModel)]="step2.phone" placeholder="+995 5XX XXX XXX">
+          <input type="tel" [(ngModel)]="step2.phone" placeholder="+995 5XX XXX XXX"
+            (input)="clearError('phone', 2)">
+          <span class="ic-error" *ngIf="errors2.phone">{{ errors2.phone }}</span>
         </div>
-        <div class="ic-field">
+
+        <div class="ic-field" [class.ic-field--error]="errors2.email">
           <label>ელ-ფოსტა</label>
-          <input type="email" [(ngModel)]="step2.email" placeholder="company@email.com">
+          <input type="email" [(ngModel)]="step2.email" placeholder="company@email.com"
+            (input)="clearError('email', 2)">
+          <span class="ic-error" *ngIf="errors2.email">{{ errors2.email }}</span>
         </div>
-        <div class="ic-field">
+
+        <div class="ic-field" [class.ic-field--error]="errors2.password">
           <label>პაროლი</label>
           <div class="ic-pass-wrap">
-            <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="step2.password" placeholder="მინიმუმ 8 სიმბოლო">
+            <input [type]="showPassword ? 'text' : 'password'" [(ngModel)]="step2.password"
+              placeholder="მინიმუმ 8 სიმბოლო" (input)="clearError('password', 2)">
             <button class="ic-eye" (click)="showPassword = !showPassword" type="button">
-              {{ showPassword ? '🙈' : '👁' }}
+              <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>
           </div>
+          <div class="ic-strength" *ngIf="step2.password">
+            <div class="ic-strength-bar">
+              <div class="ic-strength-fill"
+                [style.width.%]="passwordStrengthPercent"
+                [style.background]="passwordStrength.color">
+              </div>
+            </div>
+            <span class="ic-strength-label" [style.color]="passwordStrength.color">
+              {{ passwordStrength.label }}
+            </span>
+          </div>
+          <span class="ic-error" *ngIf="errors2.password">{{ errors2.password }}</span>
         </div>
-        <div class="ic-field">
+
+        <div class="ic-field" [class.ic-field--error]="errors2.confirmPassword">
           <label>გაიმეორეთ პაროლი</label>
           <div class="ic-pass-wrap">
-            <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="step2.confirmPassword" placeholder="••••••••">
+            <input [type]="showConfirmPassword ? 'text' : 'password'"
+              [(ngModel)]="step2.confirmPassword" placeholder="••••••••"
+              (input)="clearError('confirmPassword', 2)">
             <button class="ic-eye" (click)="showConfirmPassword = !showConfirmPassword" type="button">
-              {{ showConfirmPassword ? '🙈' : '👁' }}
+              <svg *ngIf="!showConfirmPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg *ngIf="showConfirmPassword" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
             </button>
           </div>
+          <span class="ic-error" *ngIf="errors2.confirmPassword">{{ errors2.confirmPassword }}</span>
         </div>
-        <button class="ic-btn-primary" (click)="submit()">რეგისტრაცია ✓</button>
+
+        <button class="ic-btn-primary" [class.ic-btn-loading]="isLoading"
+          (click)="submit()" type="button" [disabled]="isLoading">
+          <span *ngIf="!isLoading">გაგრძელება <span class="ic-btn-arrow">→</span></span>
+          <span *ngIf="isLoading" class="ic-spinner"></span>
+        </button>
+
         <p class="ic-terms">
-          რეგისტრაციით ეთანხმებით <span>სერვისის პირობებს</span> და <span>კონფიდენციალურობის პოლიტიკას</span>
+          რეგისტრაციით ეთანხმებით
+          <a href="/terms" target="_blank">სერვისის პირობებს</a> და
+          <a href="/privacy" target="_blank">კონფიდენციალურობის პოლიტიკას</a>
         </p>
+      </div>
+
+      <!-- Step 3: Email verification -->
+      <div *ngIf="currentStep === 3" class="ic-step ic-step--verify">
+
+        <button class="ic-back" (click)="goBack()" type="button">← უკან</button>
+
+        <div class="ic-verify-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+          </svg>
+        </div>
+
+        <p class="ic-verify-hint">
+          6-ნიშნა კოდი გაიგზავნა
+          <strong>{{ registeredEmail }}</strong>-ზე
+        </p>
+
+        <!-- 6 digit inputs -->
+        <div class="ic-code-inputs" (paste)="onCodePaste($event)">
+          <input
+            *ngFor="let digit of verificationCode; let i = index"
+            [id]="'vc-' + i"
+            class="ic-code-input"
+            [class.ic-code-input--filled]="digit !== ''"
+            [class.ic-code-input--error]="verifyError"
+            type="text"
+            inputmode="numeric"
+            maxlength="1"
+            [value]="digit"
+            (input)="onCodeInput(i, $event)"
+            (keydown)="onCodeKeydown(i, $event)"
+            autocomplete="one-time-code">
+        </div>
+
+        <div class="ic-verify-error" *ngIf="verifyError">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          {{ verifyError }}
+        </div>
+
+        <button class="ic-btn-primary ic-btn-verify"
+          [class.ic-btn-loading]="isLoading"
+          (click)="verifyCode()" type="button"
+          [disabled]="isLoading || fullCode.length !== 6">
+          <span *ngIf="!isLoading">დადასტურება ✓</span>
+          <span *ngIf="isLoading" class="ic-spinner"></span>
+        </button>
+
+        <div class="ic-resend">
+          <span *ngIf="resendCooldown > 0" class="ic-resend-wait">
+            კოდის გათხოვნა შესაძლებელია {{ resendCooldown }}წ-ში
+          </span>
+          <button *ngIf="resendCooldown === 0" class="ic-resend-btn"
+            (click)="resendCode()" type="button">
+            კოდი არ მოვიდა? <span>თავიდან გაგზავნა</span>
+          </button>
+        </div>
+
       </div>
 
     </div>
