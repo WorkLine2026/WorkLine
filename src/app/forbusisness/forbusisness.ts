@@ -1,6 +1,10 @@
 import { Component, PLATFORM_ID, Inject, afterNextRender } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-
+import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { Registercompany } from '../registercompany/registercompany';
+import { ChooseRole } from '../choose-role/choose-role';
+import { Registerperson } from '../registerperson/registerperson';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from "@angular/router";
 interface IFormData {
   companyName: string;
   contactPerson: string;
@@ -18,12 +22,22 @@ interface CounterConfig {
 
 @Component({
   selector: 'app-forbusisness',
-  imports: [],
+  imports: [CommonModule, FormsModule, Registercompany, Registerperson, ChooseRole, RouterLink],
   templateUrl: './forbusisness.html',
   styleUrls: ['./forbusisness.scss']
 })
 export class Forbusisness {
   title = 'WorkLine Business';
+   showChooseRole = false;
+  showRegistration = false;
+  showCompanyRegistration = false;
+    onRoleSelected(role: 'company' | 'worker') {
+    if (role === 'company') {
+      this.showCompanyRegistration = true;
+    } else {
+      this.showRegistration = true;
+    }
+  }
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {
     afterNextRender(() => {

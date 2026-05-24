@@ -1,10 +1,9 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-choose-role',
-  imports: [CommonModule, ],
+  imports: [CommonModule],
   templateUrl: './choose-role.html',
   styleUrl: './choose-role.scss'
 })

@@ -1,16 +1,20 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { Registercompany } from '../registercompany/registercompany';
+import { ChooseRole } from '../choose-role/choose-role';
+import { Registerperson } from '../registerperson/registerperson';
 @Component({
   selector: 'app-candidates',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule,ChooseRole, Registercompany, Registerperson],
   templateUrl: './candidates.html',
   styleUrls: ['./candidates.scss'],
 })
 export class CandidatesComponent {
-
+ showChooseRole = false;
+  showRegistration = false;
+  showCompanyRegistration = false;
   steps = [
     {
       num: '01',
@@ -118,5 +122,12 @@ export class CandidatesComponent {
     setTimeout(() => {
       this.formData = { name: '', phone: '', city: '', sector: '', period: '' };
     }, 4000);
+  };
+  onRoleSelected(role: 'company' | 'worker') {
+    if (role === 'company') {
+      this.showCompanyRegistration = true;
+    } else {
+      this.showRegistration = true;
+    }
   }
 }

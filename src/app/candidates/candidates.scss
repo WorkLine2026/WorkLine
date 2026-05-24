@@ -92,6 +92,7 @@ body {
 // BUTTONS
 // ══════════════════════════════════════════════════════════
 .btn-main {
+  
   display: inline-flex;
   align-items: center;
   background: $ink;
@@ -103,6 +104,7 @@ body {
   text-decoration: none;
   transition: background 0.18s, transform 0.15s;
   letter-spacing: 0.01em;
+  margin-top: 200px;
 
   &:hover { background: $ink-soft; transform: translateY(-1px); }
   &--inv  { background: $white; color: $ink;

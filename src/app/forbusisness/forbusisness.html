@@ -21,8 +21,8 @@
         ყოველგვარი HR სტრესის, გრძელი ინტერვიუების და ბიუროკრატიის გარეშე.
       </p>
       <div class="hero__actions reveal-fade">
-        <a href="#contact" class="btn btn--primary">უფასო კონსულტაცია →</a>
-        <a href="#how" class="btn btn--ghost">როგორ მუშაობს ↓</a>
+        <a routerLink="/contact" class="btn btn--primary">უფასო კონსულტაცია →</a>
+        <button  class="btn btn--ghost" (click)="showChooseRole = true; $event.preventDefault()">დარეგისტრირდი →</button>
       </div>
       <div class="hero__metrics reveal-fade">
         <div class="metric">
@@ -332,7 +332,7 @@
           <div class="tag">FAQ</div>
           <h2 class="section-title">ხშირად<br><em>დასმული კითხვები</em></h2>
           <p>სხვა კითხვა გაქვთ? გამოგვიგზავნეთ — გიპასუხებთ 1 საათში.</p>
-          <a href="#contact" class="btn btn--primary btn--sm">კითხვის გაგზავნა →</a>
+          <a routerLink="/contact" class="btn btn--primary">უფასო კონსულტაცია →</a>
         </div>
         <div class="faq__list" id="faqList">
           <div class="faq-item" data-open="false">
@@ -456,3 +456,18 @@
       </div>
     </div>
   </section>
+  <app-choose-role
+  *ngIf="showChooseRole"
+  (closed)="showChooseRole = false"
+  (roleSelected)="onRoleSelected($event)">
+</app-choose-role>
+<app-registercompany
+  *ngIf="showCompanyRegistration"
+  (closed)="showCompanyRegistration = false">
+</app-registercompany>
+
+
+  <app-registerperson
+  *ngIf="showRegistration"
+  (closed)="showRegistration = false">
+</app-registerperson>

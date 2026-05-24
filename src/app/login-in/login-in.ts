@@ -12,11 +12,13 @@ import { FormsModule } from '@angular/forms';
 export class Login {
   @Output() closed = new EventEmitter<void>();
   @Output() registerRequested = new EventEmitter<void>();
-  @Output() forgotRequested = new EventEmitter<void>(); // ← ახალი
+  @Output() forgotRequested = new EventEmitter<void>();
 
   role: 'worker' | 'company' = 'worker';
   email = '';
   password = '';
+  companyCode = '';
+  companyCodeError = '';
   rememberMe = false;
   showPassword = false;
   submitted = false;
@@ -24,12 +26,16 @@ export class Login {
   submit(): void {
     this.submitted = true;
     if (!this.email || !this.password) return;
-    console.log('Login:', { role: this.role, email: this.email, rememberMe: this.rememberMe });
+    if (this.role === 'company' && !/^\d{9}$/.test(this.companyCode)) {
+      this.companyCodeError = 'საიდენტიფიკაციო კოდი უნდა შეიცავდეს ზუსტად 9 ციფრს';
+      return;
+    }
+    console.log('Login:', { role: this.role, email: this.email, companyCode: this.companyCode, rememberMe: this.rememberMe });
     this.close();
   }
 
   onForgotPassword(): void {
-    this.forgotRequested.emit(); // ← navbar-ს ეუბნება გახსნას
+    this.forgotRequested.emit();
     this.close();
   }
 

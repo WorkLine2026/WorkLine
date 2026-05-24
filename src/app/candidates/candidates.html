@@ -16,8 +16,7 @@
     </p>
 
     <div class="c-hero__cta">
-      <a href="#register-form" class="btn-main">დარეგისტრირდი →</a>
-      <a href="#how" class="btn-link">როგორ მუშაობს ↓</a>
+      <button  class="btn-main" (click)="showChooseRole = true; $event.preventDefault()">დარეგისტრირდი →</button>
     </div>
 
     <div class="c-hero__stats">
@@ -186,50 +185,9 @@
         </ul>
       </div>
 
-      <form class="reg__form" (ngSubmit)="onSubmit()" #regForm="ngForm">
+     
+        <button  class="btn-main" (click)="showChooseRole = true; $event.preventDefault()">დარეგისტრირდი →</button>
 
-        <div class="field">
-          <label>სახელი და გვარი</label>
-          <input type="text" [(ngModel)]="formData.name" name="name"
-            placeholder="მაგ. გიორგი ბერიძე" required />
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <label>ტელეფონი</label>
-            <input type="tel" [(ngModel)]="formData.phone" name="phone"
-              placeholder="+995 5XX XXX XXX" required />
-          </div>
-          <div class="field">
-            <label>ქალაქი</label>
-            <input type="text" [(ngModel)]="formData.city" name="city"
-              placeholder="თბილისი" required />
-          </div>
-        </div>
-
-        <div class="field">
-          <label>სასურველი სფერო</label>
-          <select [(ngModel)]="formData.sector" name="sector" required>
-            <option value="" disabled selected>აირჩიე სფერო</option>
-            <option *ngFor="let s of sectors" [value]="s">{{ s }}</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>სამუშაო პერიოდი</label>
-          <div class="period-opts">
-            <label class="period-opt" *ngFor="let p of periods">
-              <input type="radio" [(ngModel)]="formData.period" name="period" [value]="p" />
-              <span>{{ p }}</span>
-            </label>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-submit" [disabled]="submitted">
-          {{ submitted ? '✓ გაგზავნილია!' : 'გაგზავნე განაცხადი →' }}
-        </button>
-
-      </form>
 
     </div>
 
@@ -245,9 +203,24 @@
         <p>ჩვენი გუნდი ყოველთვის ხელმისაწვდომია.</p>
       </div>
       <div class="fcta__btns">
-        <a href="tel:+995" class="btn-main">დარეკე</a>
-        <a href="https://wa.me/995" class="btn-link btn-link--light" target="_blank">WhatsApp →</a>
+        <a href="tel:+995555649476" class="btn-main">დარეკე</a>
+        <a href="https://wa.me/995555649476" class="btn-link btn-link--light" target="_blank">WhatsApp →</a>
       </div>
     </div>
   </div>
 </section>
+<app-choose-role
+  *ngIf="showChooseRole"
+  (closed)="showChooseRole = false"
+  (roleSelected)="onRoleSelected($event)">
+</app-choose-role>
+<app-registercompany
+  *ngIf="showCompanyRegistration"
+  (closed)="showCompanyRegistration = false">
+</app-registercompany>
+
+
+  <app-registerperson
+  *ngIf="showRegistration"
+  (closed)="showRegistration = false">
+</app-registerperson>

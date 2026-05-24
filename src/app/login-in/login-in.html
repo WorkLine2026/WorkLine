@@ -16,26 +16,38 @@
 
     <div class="ln-body">
 
-      <!-- ROLE TABS -->
       <div class="ln-tabs">
         <button
           class="ln-tab"
           [class.active]="role === 'worker'"
-          (click)="role = 'worker'"
+          (click)="role = 'worker'; submitted = false; companyCodeError = ''"
           type="button">
           <span class="ln-tab-icon">👤</span> კადრი ვარ
         </button>
         <button
           class="ln-tab"
           [class.active]="role === 'company'"
-          (click)="role = 'company'"
+          (click)="role = 'company'; submitted = false"
           type="button">
           <span class="ln-tab-icon">🏢</span> კომპანია ვარ
         </button>
       </div>
 
-      <!-- FORM -->
       <div class="ln-form">
+
+        <div class="ln-field" *ngIf="role === 'company'">
+          <label>საიდენტიფიკაციო კოდი</label>
+          <input
+            type="text"
+            [(ngModel)]="companyCode"
+            placeholder="123456789"
+            maxlength="9"
+            (input)="companyCode = companyCode.replace(/\D/g, ''); companyCodeError = ''"
+            [class.error]="(submitted && !companyCode) || companyCodeError">
+          <span class="ln-error-msg" *ngIf="submitted && !companyCode">შეიყვანეთ საიდენტიფიკაციო კოდი</span>
+          <span class="ln-error-msg" *ngIf="companyCodeError">{{ companyCodeError }}</span>
+        </div>
+
         <div class="ln-field">
           <label>ელ-ფოსტა</label>
           <input

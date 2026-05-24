@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ChooseRole } from '../choose-role/choose-role';
 import { Registercompany } from '../registercompany/registercompany';
@@ -20,9 +20,12 @@ export class Navbar implements OnInit, OnDestroy {
   showRegistration = false;
   showCompanyRegistration = false;
   showLoginin = false;
-  showForgot = false; // ← ახალი
+  showForgot = false;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.checkScroll();
@@ -77,16 +80,23 @@ export class Navbar implements OnInit, OnDestroy {
     }
   }
 
-  openChooseRole(event: Event): void {
-    event.preventDefault();
-    this.showChooseRole = true;
+  openLogin(): void {
+    this.showLoginin = true;
+    this.cdr.detectChanges();
   }
 
-  onRoleSelected(role: 'company' | 'worker') {
+  openChooseRole(event?: Event): void {
+    if (event) event.preventDefault();
+    this.showChooseRole = true;
+    this.cdr.detectChanges();
+  }
+
+  onRoleSelected(role: 'company' | 'worker'): void {
     if (role === 'company') {
       this.showCompanyRegistration = true;
     } else {
       this.showRegistration = true;
     }
+    this.cdr.detectChanges();
   }
 }

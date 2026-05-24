@@ -30,7 +30,14 @@
         </div>
         <div class="ic-field">
           <label>საიდენტიფიკაციო კოდი</label>
-          <input type="text" [(ngModel)]="step1.code" placeholder="123456789">
+          <input
+            type="text"
+            [(ngModel)]="step1.code"
+            placeholder="123456789"
+            maxlength="9"
+            (input)="step1.code = step1.code.replace(/\D/g, ''); codeError = ''"
+            [class.ic-input-error]="codeError">
+          <span class="ic-error" *ngIf="codeError">{{ codeError }}</span>
         </div>
         <div class="ic-field-row">
           <div class="ic-field">

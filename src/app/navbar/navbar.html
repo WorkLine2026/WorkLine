@@ -19,8 +19,8 @@
     </ul>
 
     <div class="wl-navbar__actions">
-      <a class="btn-ghost full" (click)="showLoginin = true; closeMenu()">შესვლა</a>
-      <a class="btn-primary full" (click)="showChooseRole = true; $event.preventDefault()">
+      <a class="btn-ghost full" (click)="openLogin()">შესვლა</a>
+      <a class="btn-primary full" (click)="openChooseRole($event)">
         <span>რეგისტრაცია</span>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
           <path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
@@ -57,7 +57,7 @@
 
     <div class="wl-drawer__footer">
       <div class="wl-drawer__actions">
-       <a class="btn-ghost full" (click)="showLoginin = true; closeMenu()">შესვლა</a>
+        <a class="btn-ghost full" (click)="openLogin(); closeMenu()">შესვლა</a>
         <a class="btn-primary full" (click)="openChooseRole($event); closeMenu()">რეგისტრაცია</a>
       </div>
 
@@ -85,20 +85,22 @@
   (closed)="showCompanyRegistration = false">
 </app-registercompany>
 
-
-  <app-registerperson
+<app-registerperson
   *ngIf="showRegistration"
   (closed)="showRegistration = false">
 </app-registerperson>
-<app-login-in 
+
+<app-login-in
   *ngIf="showLoginin"
   (closed)="showLoginin = false"
-  (registerRequested)="showChooseRole = true"
-  (forgotRequested)="showForgot = true">
+  (registerRequested)="showLoginin = false; openChooseRole()"
+  (forgotRequested)="showLoginin = false; showForgot = true">
 </app-login-in>
-  <app-forgotpassword
+
+<app-forgotpassword
   *ngIf="showForgot"
   (closed)="showForgot = false"
   (backToLogin)="showLoginin = true">
 </app-forgotpassword>
+
 <div class="wl-navbar__spacer"></div>

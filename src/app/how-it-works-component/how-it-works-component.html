@@ -311,7 +311,7 @@
         <div class="faq__contact-icon">💬</div>
         <h4>სხვა კითხვა გაქვთ?</h4>
         <p>ჩვენი გუნდი მზადაა პასუხისთვის 2 საათში.</p>
-        <a href="#cta" class="faq__contact-btn">დაგვიწერეთ →</a>
+        <a routerLink="/contact" class="faq__contact-btn">დაგვიწერეთ →</a>
       </div>
 
     </div>
@@ -330,20 +330,23 @@
         <p class="cta__sub">ერთი ზარი — WorkLine დანარჩენს მოაგვარებს.</p>
       </div>
       <div class="cta__actions">
-        <a href="#" class="cta__btn cta__btn--primary">კომპანია ვარ →</a>
-        <a href="#" class="cta__btn cta__btn--secondary">კადრი ვარ →</a>
-        <p class="cta__note">📞 +995 — გახსნილია 24/7</p>
+          <a class="cta__btn cta__btn--primary" (click)="showIamcompany = true; $event.preventDefault()">
+    მე კომპანია ვარ →
+  </a>
+  <a class="cta__btn cta__btn--secondary" (click)="showPersonalComponent = true; $event.preventDefault()">
+    მე კადრი ვარ →
+  </a>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════
-     FOOTER
-════════════════════════════════════════════ -->
-<footer class="footer">
-  <div class="footer__logo">
-    <span class="nav__logo-mark">W</span>WorkLine
-  </div>
-  <p class="footer__note">© 2025 WorkLine. ყველა უფლება დაცულია.</p>
-</footer>
+<app-iamcompany
+  *ngIf="showIamcompany"
+  (closed)="showIamcompany = false">
+</app-iamcompany>
+
+<app-personal-component
+  *ngIf="showPersonalComponent"
+  (closed)="showPersonalComponent = false">
+</app-personal-component>
