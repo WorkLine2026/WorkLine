@@ -18,6 +18,8 @@ export class Home {
   showRegistration = false;
   showCompanyRegistration = false;
   showChooseRole = false;
+  showIamcompany = false;        // ← ახალი
+  showPersonalComponent = false;
 
   onRoleSelected(role: 'company' | 'worker') {
     if (role === 'company') {

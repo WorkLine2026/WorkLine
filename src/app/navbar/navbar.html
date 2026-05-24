@@ -57,7 +57,7 @@
 
     <div class="wl-drawer__footer">
       <div class="wl-drawer__actions">
-        <a routerLink="/login" (click)="closeMenu()" class="btn-ghost full">შესვლა</a>
+       <a class="btn-ghost full" (click)="showLoginin = true; closeMenu()">შესვლა</a>
         <a class="btn-primary full" (click)="openChooseRole($event); closeMenu()">რეგისტრაცია</a>
       </div>
 

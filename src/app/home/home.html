@@ -15,12 +15,14 @@
         არ გჭირდებათ გრძელი პროცესი, მხოლოდ ერთი ზარი.
       </p>
 
-      <div class="hero-cta-row">
-        <a (click)="showChooseRole = true; $event.preventDefault()" class="btn-primary">
-          მე კომპანია ვარ →
-        </a>
-        <a (click)="showChooseRole = true; $event.preventDefault()" class="btn-outline">მე კადრი ვარ →</a>
-      </div>
+<div class="hero-cta-row">
+  <a class="btn-primary" (click)="showIamcompany = true; $event.preventDefault()">
+    მე კომპანია ვარ →
+  </a>
+  <a class="btn-outline" (click)="showPersonalComponent = true; $event.preventDefault()">
+    მე კადრი ვარ →
+  </a>
+</div>
 
       <div class="hero-stats">
         <div class="stat-item">
@@ -252,6 +254,17 @@
       </div>
     </div>
   </section>
+  
+<app-iamcompany
+  *ngIf="showIamcompany"
+  (closed)="showIamcompany = false">
+</app-iamcompany>
+
+<app-personal-component
+  *ngIf="showPersonalComponent"
+  (closed)="showPersonalComponent = false">
+</app-personal-component>
+
 
   <!-- MODALS -->
   <app-choose-role
@@ -260,20 +273,9 @@
     (roleSelected)="onRoleSelected($event)">
   </app-choose-role>
 
-  <app-personal-component
-    *ngIf="showRegistration"
-    (closed)="showRegistration = false">
-  </app-personal-component>
-
-  <app-iamcompany
-    *ngIf="showCompanyRegistration"
-    (closed)="showCompanyRegistration = false">
-  </app-iamcompany>
-  
   <app-registercompany
   *ngIf="showCompanyRegistration"
-  (closed)="showCompanyRegistration = false"
-  >
+  (closed)="showCompanyRegistration = false">
 
   </app-registercompany>
 
