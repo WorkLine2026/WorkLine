@@ -1,0 +1,102 @@
+<div class="ln-overlay">
+  <div class="ln-backdrop" (click)="close()"></div>
+
+  <div class="ln-modal">
+
+    <div class="ln-header">
+      <div class="ln-header-top">
+        <div class="ln-logo"><span>W</span></div>
+        <button class="ln-close" (click)="close()">✕</button>
+      </div>
+      <div class="ln-header-text">
+        <h2 class="ln-title">მოგესალმებით</h2>
+        <p class="ln-sub">შედით თქვენს WorkLine ანგარიშში</p>
+      </div>
+    </div>
+
+    <div class="ln-body">
+
+      <!-- ROLE TABS -->
+      <div class="ln-tabs">
+        <button
+          class="ln-tab"
+          [class.active]="role === 'worker'"
+          (click)="role = 'worker'"
+          type="button">
+          <span class="ln-tab-icon">👤</span> კადრი ვარ
+        </button>
+        <button
+          class="ln-tab"
+          [class.active]="role === 'company'"
+          (click)="role = 'company'"
+          type="button">
+          <span class="ln-tab-icon">🏢</span> კომპანია ვარ
+        </button>
+      </div>
+
+      <!-- FORM -->
+      <div class="ln-form">
+        <div class="ln-field">
+          <label>ელ-ფოსტა</label>
+          <input
+            type="email"
+            [(ngModel)]="email"
+            placeholder="name@email.com"
+            [class.error]="submitted && !email">
+          <span class="ln-error-msg" *ngIf="submitted && !email">შეიყვანეთ ელ-ფოსტა</span>
+        </div>
+
+        <div class="ln-field">
+          <div class="ln-label-row">
+            <label>პაროლი</label>
+            <button class="ln-forgot" type="button" (click)="onForgotPassword()">დაგავიწყდათ?</button>
+          </div>
+          <div class="ln-pass-wrap">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              [(ngModel)]="password"
+              placeholder="••••••••"
+              [class.error]="submitted && !password">
+            <button class="ln-eye" (click)="showPassword = !showPassword" type="button">
+              {{ showPassword ? '🙈' : '👁' }}
+            </button>
+          </div>
+          <span class="ln-error-msg" *ngIf="submitted && !password">შეიყვანეთ პაროლი</span>
+        </div>
+
+        <div class="ln-remember">
+          <label class="ln-checkbox-wrap">
+            <input type="checkbox" [(ngModel)]="rememberMe">
+            <span class="ln-checkmark"></span>
+            დამახსოვრება
+          </label>
+        </div>
+
+        <button class="ln-btn-primary" (click)="submit()">
+          <span>შესვლა</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <div class="ln-divider"><span>ან</span></div>
+
+        <button class="ln-btn-google" type="button">
+          <svg width="18" height="18" viewBox="0 0 48 48">
+            <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.6 32.9 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.9z"/>
+            <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.8 18.9 12 24 12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
+            <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.3 35.2 26.8 36 24 36c-5.2 0-9.6-3.1-11.3-7.5l-6.6 5.1C9.5 39.6 16.2 44 24 44z"/>
+            <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.6l6.2 5.2C36.9 40.1 44 34.8 44 24c0-1.3-.1-2.7-.4-3.9z"/>
+          </svg>
+          Google-ით შესვლა
+        </button>
+      </div>
+
+      <p class="ln-register-link">
+        ანგარიში არ გაქვთ?
+        <button type="button" (click)="onRegister()">დარეგისტრირდით →</button>
+      </p>
+
+    </div>
+  </div>
+</div>

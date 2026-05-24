@@ -3,10 +3,13 @@ import { Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from 
 import { RouterLink } from '@angular/router';
 import { ChooseRole } from '../choose-role/choose-role';
 import { Registercompany } from '../registercompany/registercompany';
+import { Registerperson } from '../registerperson/registerperson';
+import { Login } from '../login-in/login-in';
+import { Forgotpassword } from '../forgotpassword/forgotpassword';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, RouterLink, ChooseRole, Registercompany],
+  imports: [CommonModule, RouterLink, ChooseRole, Registercompany, Registerperson, Login, Forgotpassword],
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
@@ -16,6 +19,8 @@ export class Navbar implements OnInit, OnDestroy {
   showChooseRole = false;
   showRegistration = false;
   showCompanyRegistration = false;
+  showLoginin = false;
+  showForgot = false; // ← ახალი
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object) {}
 
@@ -43,7 +48,6 @@ export class Navbar implements OnInit, OnDestroy {
 
   toggleMenu(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-
     this.menuOpen = !this.menuOpen;
     if (this.menuOpen) {
       document.body.style.overflow = 'hidden';
@@ -62,7 +66,6 @@ export class Navbar implements OnInit, OnDestroy {
 
   closeMenu(): void {
     if (!isPlatformBrowser(this.platformId)) return;
-
     if (this.menuOpen) {
       this.menuOpen = false;
       const scrollY = document.body.style.top;

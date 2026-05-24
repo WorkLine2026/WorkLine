@@ -1,1 +1,184 @@
-<p>registerperson works!</p>
+<div class="rp-overlay">
+  <div class="rp-backdrop" (click)="close()"></div>
+
+  <div class="rp-modal">
+
+    <div class="rp-header">
+      <div class="rp-steps">
+        <div class="rp-step-bar" [class.active]="currentStep >= 1" [class.done]="currentStep > 1"></div>
+        <div class="rp-step-bar" [class.active]="currentStep >= 2" [class.done]="currentStep > 2"></div>
+        <div class="rp-step-bar" [class.active]="currentStep >= 3"></div>
+      </div>
+
+      <div class="rp-header-top">
+        <div class="rp-logo"><span>W</span></div>
+        <button class="rp-close" (click)="close()">✕</button>
+      </div>
+
+      <div class="rp-header-text">
+        <p class="rp-step-label">ნაბიჯი {{ currentStep }} / 3</p>
+        <h2 class="rp-title">{{ stepTitles[currentStep - 1] }}</h2>
+        <p class="rp-sub">{{ stepSubs[currentStep - 1] }}</p>
+      </div>
+    </div>
+
+    <div class="rp-body">
+
+      <!-- STEP 1: პირადი ინფო -->
+      <div *ngIf="currentStep === 1" class="rp-step">
+        <div class="rp-field-row">
+          <div class="rp-field">
+            <label>სახელი</label>
+            <input type="text" [(ngModel)]="step1.firstName" placeholder="სახელი">
+          </div>
+          <div class="rp-field">
+            <label>გვარი</label>
+            <input type="text" [(ngModel)]="step1.lastName" placeholder="გვარი">
+          </div>
+        </div>
+        <div class="rp-field-row">
+          <div class="rp-field">
+            <label>დაბადების თარიღი</label>
+            <input type="date" [(ngModel)]="step1.birthDate">
+          </div>
+          <div class="rp-field">
+            <label>სქესი</label>
+            <div class="rp-select-wrap">
+              <select [(ngModel)]="step1.gender">
+                <option value="">აირჩიეთ</option>
+                <option value="male">მამრობითი</option>
+                <option value="female">მდედრობითი</option>
+                <option value="other">სხვა</option>
+              </select>
+              <span class="rp-chevron">▾</span>
+            </div>
+          </div>
+        </div>
+        <div class="rp-field">
+          <label>პირადი ნომერი</label>
+          <input type="text" [(ngModel)]="step1.idNumber" placeholder="XXXXXXXXXXX (11 ციფრი)">
+        </div>
+        <div class="rp-field">
+          <label>ქალაქი</label>
+          <div class="rp-select-wrap">
+            <select [(ngModel)]="step1.city">
+              <option value="">აირჩიეთ</option>
+              <option *ngFor="let c of cities" [value]="c">{{ c }}</option>
+            </select>
+            <span class="rp-chevron">▾</span>
+          </div>
+        </div>
+        <button class="rp-btn-primary" (click)="goNext()">
+          გაგრძელება <span class="rp-btn-arrow">→</span>
+        </button>
+      </div>
+
+      <!-- STEP 2: გამოცდილება -->
+      <div *ngIf="currentStep === 2" class="rp-step">
+        <button class="rp-back" (click)="goBack()">← უკან</button>
+
+        <div class="rp-field">
+          <label>სფერო / პოზიცია</label>
+          <div class="rp-select-wrap">
+            <select [(ngModel)]="step2.sector">
+              <option value="">აირჩიეთ</option>
+              <option *ngFor="let s of sectors" [value]="s">{{ s }}</option>
+            </select>
+            <span class="rp-chevron">▾</span>
+          </div>
+        </div>
+
+        <div class="rp-field">
+          <label>გამოცდილება</label>
+          <div class="rp-select-wrap">
+            <select [(ngModel)]="step2.experience">
+              <option value="">აირჩიეთ</option>
+              <option value="none">გამოცდილება არ მაქვს</option>
+              <option value="less1">1 წელზე ნაკლები</option>
+              <option value="1to3">1–3 წელი</option>
+              <option value="3to5">3–5 წელი</option>
+              <option value="5plus">5+ წელი</option>
+            </select>
+            <span class="rp-chevron">▾</span>
+          </div>
+        </div>
+
+        <div class="rp-field">
+          <label>ხელმისაწვდომობა</label>
+          <div class="rp-chips">
+            <button
+              *ngFor="let a of availabilities"
+              class="rp-chip"
+              [class.selected]="step2.availability === a"
+              (click)="step2.availability = a"
+              type="button">
+              {{ a }}
+            </button>
+          </div>
+        </div>
+
+        <div class="rp-field">
+          <label>სამუშაო გრაფიკი</label>
+          <div class="rp-chips">
+            <button
+              *ngFor="let s of schedules"
+              class="rp-chip"
+              [class.selected]="isScheduleSelected(s)"
+              (click)="toggleSchedule(s)"
+              type="button">
+              {{ s }}
+            </button>
+          </div>
+        </div>
+
+        <button class="rp-btn-primary" (click)="goNext()">
+          გაგრძელება <span class="rp-btn-arrow">→</span>
+        </button>
+      </div>
+
+      <!-- STEP 3: ანგარიში -->
+      <div *ngIf="currentStep === 3" class="rp-step">
+        <button class="rp-back" (click)="goBack()">← უკან</button>
+
+        <div class="rp-field">
+          <label>ტელეფონი</label>
+          <input type="tel" [(ngModel)]="step3.phone" placeholder="+995 5XX XXX XXX">
+        </div>
+        <div class="rp-field">
+          <label>ელ-ფოსტა</label>
+          <input type="email" [(ngModel)]="step3.email" placeholder="name@email.com">
+        </div>
+        <div class="rp-field">
+          <label>პაროლი</label>
+          <div class="rp-pass-wrap">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              [(ngModel)]="step3.password"
+              placeholder="მინიმუმ 8 სიმბოლო">
+            <button class="rp-eye" (click)="showPassword = !showPassword" type="button">
+              {{ showPassword ? '🙈' : '👁' }}
+            </button>
+          </div>
+        </div>
+        <div class="rp-field">
+          <label>გაიმეორეთ პაროლი</label>
+          <div class="rp-pass-wrap">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              [(ngModel)]="step3.confirmPassword"
+              placeholder="••••••••">
+            <button class="rp-eye" (click)="showConfirmPassword = !showConfirmPassword" type="button">
+              {{ showConfirmPassword ? '🙈' : '👁' }}
+            </button>
+          </div>
+        </div>
+
+        <button class="rp-btn-primary" (click)="submit()">რეგისტრაცია ✓</button>
+        <p class="rp-terms">
+          რეგისტრაციით ეთანხმებით <span>სერვისის პირობებს</span> და <span>კონფიდენციალურობის პოლიტიკას</span>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>

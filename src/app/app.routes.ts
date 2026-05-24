@@ -12,6 +12,7 @@ import { Contact } from './contact/contact';
 import { ChooseRole } from './choose-role/choose-role';
 import { Registercompany } from './registercompany/registercompany';
 import { Registerperson } from './registerperson/registerperson';
+import { Login, } from './login-in/login-in';
 
 export const routes: Routes = [
     {
@@ -53,5 +54,8 @@ export const routes: Routes = [
     },
     {
         path: "registerperon", component:Registerperson
+    },
+    {
+        path: "login-in", component:Login
     }
 ];

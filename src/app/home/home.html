@@ -269,3 +269,15 @@
     *ngIf="showCompanyRegistration"
     (closed)="showCompanyRegistration = false">
   </app-iamcompany>
+  
+  <app-registercompany
+  *ngIf="showCompanyRegistration"
+  (closed)="showCompanyRegistration = false"
+  >
+
+  </app-registercompany>
+
+  <app-registerperson
+  *ngIf="showRegistration"
+  (closed)="showRegistration = false">
+</app-registerperson>

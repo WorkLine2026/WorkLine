@@ -19,7 +19,7 @@
     </ul>
 
     <div class="wl-navbar__actions">
-      <a class="btn-ghost">შესვლა</a>
+      <a class="btn-ghost full" (click)="showLoginin = true; closeMenu()">შესვლა</a>
       <a class="btn-primary full" (click)="showChooseRole = true; $event.preventDefault()">
         <span>რეგისტრაცია</span>
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -86,5 +86,19 @@
 </app-registercompany>
 
 
-
+  <app-registerperson
+  *ngIf="showRegistration"
+  (closed)="showRegistration = false">
+</app-registerperson>
+<app-login-in 
+  *ngIf="showLoginin"
+  (closed)="showLoginin = false"
+  (registerRequested)="showChooseRole = true"
+  (forgotRequested)="showForgot = true">
+</app-login-in>
+  <app-forgotpassword
+  *ngIf="showForgot"
+  (closed)="showForgot = false"
+  (backToLogin)="showLoginin = true">
+</app-forgotpassword>
 <div class="wl-navbar__spacer"></div>
