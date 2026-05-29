@@ -1,11 +1,11 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { RouterLink } from "@angular/router";
-import { PersonalComponent } from '../personal-component/personal-component';
+import { PersonalComponent } from '../Company and Person/personal-component/personal-component';
 import { CommonModule } from '@angular/common';
-import { Iamcompany } from '../iamcompany/iamcompany';
+import { Iamcompany } from '../Company and Person/iamcompany/iamcompany';
 import { ChooseRole } from '../choose-role/choose-role';
-import { RegistercompanyComponent } from '../registercompany/registercompany';
-import { Registerperson } from '../registerperson/registerperson';
+import { RegistercompanyComponent } from '../Register-LoginIn/registercompany/registercompany';
+import { Registerperson } from '../Register-LoginIn/registerperson/registerperson';
 
 @Component({
   selector: 'app-home',

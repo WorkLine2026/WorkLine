@@ -1,0 +1,711 @@
+// ── Design tokens ──────────────────────────────────────────────────────────
+$bg:          #0e0e0f;
+$bg-2:        #141416;
+$bg-3:        #1a1a1d;
+$surface:     #1e1e22;
+$surface-2:   #252529;
+$border:      rgba(255,255,255,.07);
+$border-2:    rgba(255,255,255,.12);
+
+$gold:        #c9a84c;
+$gold-dim:    rgba(201,168,76,.15);
+$gold-glow:   rgba(201,168,76,.25);
+
+$text:        #f0f0f0;
+$text-2:      #a0a0a8;
+$text-3:      #606068;
+
+$teal:        #2dd4bf;
+$teal-dim:    rgba(45,212,191,.12);
+$blue:        #60a5fa;
+$blue-dim:    rgba(96,165,250,.12);
+$amber:       #fbbf24;
+$amber-dim:   rgba(251,191,36,.12);
+$red:         #f87171;
+$red-dim:     rgba(248,113,113,.12);
+$green:       #4ade80;
+$green-dim:   rgba(74,222,128,.12);
+
+$sidebar-w:   240px;
+$sidebar-coll: 72px;
+$topbar-h:    60px;
+$radius:      10px;
+$radius-sm:   6px;
+
+// ── Shell layout ────────────────────────────────────────────────────────────
+.adm-shell {
+  display: grid;
+  grid-template-columns: $sidebar-w 1fr;
+  height: 100vh;
+  background: $bg;
+  color: $text;
+  font-family: 'BPG DejaVu Sans', 'Sylfaen', sans-serif;
+  overflow: hidden;
+  transition: grid-template-columns .3s ease;
+
+  &.sidebar-collapsed {
+    grid-template-columns: $sidebar-coll 1fr;
+
+    .adm-logo-text,
+    .adm-logo-badge,
+    .adm-nav-item span:not(.adm-nav-count),
+    .adm-admin-info,
+    .adm-nav-count { display: none; }
+
+    .adm-nav-item { justify-content: center; }
+    .adm-admin-chip { justify-content: center; }
+    .adm-sidebar-footer { padding: 12px; gap: 0; flex-direction: column; }
+    .adm-logout-btn { margin-top: 8px; }
+  }
+}
+
+// ── Sidebar ─────────────────────────────────────────────────────────────────
+.adm-sidebar {
+  background: $bg-2;
+  border-right: 1px solid $border;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, $gold, transparent);
+  }
+}
+
+.adm-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 18px;
+  border-bottom: 1px solid $border;
+  flex-shrink: 0;
+}
+
+.adm-logo-mark {
+  width: 34px; height: 34px;
+  background: $gold;
+  color: $bg;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800;
+  font-size: 17px;
+  flex-shrink: 0;
+  letter-spacing: -.5px;
+}
+
+.adm-logo-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: $text;
+  white-space: nowrap;
+}
+
+.adm-logo-badge {
+  background: $gold-dim;
+  color: $gold;
+  border: 1px solid rgba($gold, .3);
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  padding: 2px 6px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+
+// Nav
+.adm-nav {
+  flex: 1;
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+}
+
+.adm-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: $radius-sm;
+  border: none;
+  background: transparent;
+  color: $text-2;
+  font-size: 13.5px;
+  font-family: inherit;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  transition: background .18s, color .18s;
+  white-space: nowrap;
+
+  .ti { font-size: 18px; flex-shrink: 0; }
+
+  &:hover {
+    background: $surface;
+    color: $text;
+  }
+
+  &.active {
+    background: $gold-dim;
+    color: $gold;
+    border: 1px solid rgba($gold, .2);
+  }
+}
+
+.adm-nav-count {
+  margin-left: auto;
+  background: $surface-2;
+  color: $text-3;
+  border-radius: 20px;
+  font-size: 11px;
+  padding: 1px 7px;
+  flex-shrink: 0;
+}
+
+// Sidebar footer
+.adm-sidebar-footer {
+  padding: 14px;
+  border-top: 1px solid $border;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.adm-admin-chip {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1;
+  min-width: 0;
+}
+
+.adm-admin-avatar {
+  width: 32px; height: 32px;
+  background: $gold-dim;
+  border: 1px solid rgba($gold,.3);
+  color: $gold;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.adm-admin-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.adm-admin-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: $text;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.adm-admin-role {
+  font-size: 10px;
+  color: $gold;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+
+.adm-logout-btn {
+  background: transparent;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  color: $text-3;
+  cursor: pointer;
+  padding: 6px 8px;
+  display: flex; align-items: center;
+  transition: all .18s;
+  flex-shrink: 0;
+
+  .ti { font-size: 16px; }
+
+  &:hover {
+    border-color: $red;
+    color: $red;
+    background: $red-dim;
+  }
+}
+
+// ── Content area ─────────────────────────────────────────────────────────────
+.adm-content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: $bg;
+}
+
+// Top bar
+.adm-topbar {
+  height: $topbar-h;
+  background: $bg-2;
+  border-bottom: 1px solid $border;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 20px;
+  flex-shrink: 0;
+}
+
+.adm-collapse-btn {
+  background: transparent;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  color: $text-3;
+  cursor: pointer;
+  padding: 6px 8px;
+  display: flex; align-items: center;
+  transition: all .18s;
+  flex-shrink: 0;
+  .ti { font-size: 18px; }
+  &:hover { border-color: $border-2; color: $text; }
+}
+
+.adm-topbar-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: $text;
+  flex: 1;
+}
+
+.adm-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.adm-pending-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: $amber-dim;
+  color: $amber;
+  border: 1px solid rgba($amber,.25);
+  border-radius: 20px;
+  font-size: 12px;
+  padding: 4px 10px;
+  cursor: pointer;
+  .ti { font-size: 13px; }
+}
+
+.adm-date {
+  font-size: 12px;
+  color: $text-3;
+}
+
+// Section
+.adm-section {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+// ── Stat cards ────────────────────────────────────────────────────────────────
+.adm-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+.adm-stat-card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: transform .18s, box-shadow .18s;
+
+  &:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.3); }
+
+  &.adm-stat--gold {
+    border-color: rgba($gold,.2);
+    .adm-stat-icon { background: $gold-dim; color: $gold; }
+    .adm-stat-delta { color: $gold; }
+  }
+  &.adm-stat--teal {
+    border-color: rgba($teal,.2);
+    .adm-stat-icon { background: $teal-dim; color: $teal; }
+    .adm-stat-delta { color: $teal; }
+  }
+  &.adm-stat--blue {
+    border-color: rgba($blue,.2);
+    .adm-stat-icon { background: $blue-dim; color: $blue; }
+  }
+  &.adm-stat--amber {
+    border-color: rgba($amber,.2);
+    .adm-stat-icon { background: $amber-dim; color: $amber; }
+  }
+}
+
+.adm-stat-icon {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  .ti { font-size: 22px; }
+}
+
+.adm-stat-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.adm-stat-num {
+  font-size: 28px;
+  font-weight: 800;
+  color: $text;
+  line-height: 1;
+}
+
+.adm-stat-lbl {
+  font-size: 11.5px;
+  color: $text-2;
+  margin-top: 3px;
+}
+
+.adm-stat-delta {
+  font-size: 11px;
+  margin-top: 4px;
+  &.adm-stat-delta--warn { color: $amber !important; }
+}
+
+// ── Panel ────────────────────────────────────────────────────────────────────
+.adm-panel {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius;
+  overflow: hidden;
+}
+
+.adm-panel-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid $border;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.adm-panel-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: $text;
+  letter-spacing: .02em;
+}
+
+// ── Activity feed ─────────────────────────────────────────────────────────────
+.adm-feed {
+  list-style: none;
+  margin: 0; padding: 0;
+}
+
+.adm-feed-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 20px;
+  border-bottom: 1px solid $border;
+  transition: background .15s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: $bg-3; }
+}
+
+.adm-feed-icon {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  .ti { font-size: 16px; }
+}
+
+.feed--user    .adm-feed-icon { background: $blue-dim;  color: $blue;  }
+.feed--company .adm-feed-icon { background: $teal-dim;  color: $teal;  }
+.feed--verify  .adm-feed-icon { background: $green-dim; color: $green; }
+.feed--suspend .adm-feed-icon { background: $red-dim;   color: $red;   }
+
+.adm-feed-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.adm-feed-text {
+  font-size: 13px;
+  color: $text;
+}
+
+.adm-feed-time {
+  font-size: 11px;
+  color: $text-3;
+  margin-top: 2px;
+}
+
+// ── Table controls ────────────────────────────────────────────────────────────
+.adm-table-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.adm-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  padding: 0 12px;
+  flex: 1;
+  min-width: 220px;
+
+  .ti { color: $text-3; font-size: 16px; flex-shrink: 0; }
+
+  &:focus-within { border-color: $gold; }
+}
+
+.adm-search {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: $text;
+  font-size: 13px;
+  font-family: inherit;
+  padding: 10px 0;
+  width: 100%;
+
+  &::placeholder { color: $text-3; }
+}
+
+.adm-filter-tabs {
+  display: flex;
+  gap: 4px;
+
+  button {
+    background: $surface;
+    border: 1px solid $border;
+    border-radius: $radius-sm;
+    color: $text-2;
+    font-size: 12px;
+    font-family: inherit;
+    padding: 7px 12px;
+    cursor: pointer;
+    transition: all .15s;
+
+    &:hover { border-color: $border-2; color: $text; }
+
+    &.active {
+      background: $gold-dim;
+      border-color: rgba($gold,.3);
+      color: $gold;
+    }
+  }
+}
+
+// ── Table ─────────────────────────────────────────────────────────────────────
+.adm-table-wrap {
+  overflow-x: auto;
+}
+
+.adm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+
+  thead tr {
+    border-bottom: 1px solid $border;
+  }
+
+  th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    color: $text-3;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 13px 16px;
+    color: $text-2;
+    border-bottom: 1px solid $border;
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background .15s;
+
+    &:last-child td { border-bottom: none; }
+    &:hover td { background: $bg-3; }
+    &.row--suspended td { opacity: .55; }
+  }
+}
+
+.td-name {
+  color: $text !important;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.td-email {
+  color: $text-3 !important;
+  font-size: 12px;
+}
+
+.td-code {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: $text-3 !important;
+}
+
+.td-empty {
+  text-align: center;
+  color: $text-3;
+  padding: 32px 16px !important;
+  font-size: 13px;
+}
+
+// Status chip
+.adm-status-chip {
+  display: inline-block;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  white-space: nowrap;
+
+  &.chip--active    { background: $green-dim;  color: $green;  border: 1px solid rgba($green,.25); }
+  &.chip--pending   { background: $amber-dim;  color: $amber;  border: 1px solid rgba($amber,.25); }
+  &.chip--suspended { background: $red-dim;    color: $red;    border: 1px solid rgba($red,.25);   }
+}
+
+// Icons
+.verified-icon   { color: $green;  font-size: 18px; }
+.unverified-icon { color: $text-3; font-size: 18px; }
+
+// Action buttons
+.td-actions {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.adm-action-btn {
+  width: 30px; height: 30px;
+  border-radius: $radius-sm;
+  border: 1px solid $border;
+  background: transparent;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+  .ti { font-size: 15px; }
+
+  &.adm-action-btn--verify {
+    color: $green;
+    &:hover { background: $green-dim; border-color: rgba($green,.3); }
+  }
+  &.adm-action-btn--toggle {
+    color: $amber;
+    &:hover { background: $amber-dim; border-color: rgba($amber,.3); }
+  }
+  &.adm-action-btn--delete {
+    color: $red;
+    &:hover { background: $red-dim; border-color: rgba($red,.3); }
+  }
+}
+
+// ── Settings ───────────────────────────────────────────────────────────────
+.adm-settings-body {
+  padding: 4px 0;
+}
+
+.adm-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid $border;
+
+  &:last-child { border-bottom: none; }
+  &.adm-settings-row--danger { background: rgba($red,.04); }
+}
+
+.adm-settings-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text;
+  margin-bottom: 3px;
+}
+
+.adm-settings-val {
+  font-size: 12px;
+  color: $text-3;
+}
+
+// Buttons
+.adm-btn {
+  border-radius: $radius-sm;
+  font-size: 12.5px;
+  font-family: inherit;
+  font-weight: 600;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all .18s;
+  border: 1px solid transparent;
+
+  &.adm-btn--ghost {
+    background: $surface-2;
+    border-color: $border;
+    color: $text-2;
+    &:hover { border-color: $border-2; color: $text; }
+  }
+
+  &.adm-btn--red {
+    background: $red-dim;
+    border-color: rgba($red,.3);
+    color: $red;
+    &:hover { background: rgba($red,.25); }
+  }
+}
+
+// ── Scrollbar ─────────────────────────────────────────────────────────────────
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: $border-2; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: $text-3; }
+
+// ── Responsive ─────────────────────────────────────────────────────────────────
+@media (max-width: 1100px) {
+  .adm-stat-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 700px) {
+  .adm-shell { grid-template-columns: $sidebar-coll 1fr; }
+  .adm-logo-text, .adm-logo-badge, .adm-nav-item span:not(.adm-nav-count),
+  .adm-admin-info, .adm-nav-count { display: none; }
+  .adm-nav-item { justify-content: center; }
+  .adm-stat-grid { grid-template-columns: 1fr 1fr; }
+}

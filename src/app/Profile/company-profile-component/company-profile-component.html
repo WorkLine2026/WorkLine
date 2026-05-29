@@ -107,3 +107,8 @@
 
   </main>
 </div>
+<app-confirm-dialog
+  *ngIf="showLogoutDialog"
+  [data]="{ title: 'გამოსვლა', message: 'ნამდვილად გსურთ გამოსვლა?', confirmText: 'გამოსვლა', cancelText: 'გაუქმება' }"
+  (confirmed)="onLogoutResult($event)">
+</app-confirm-dialog>

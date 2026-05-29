@@ -1,8 +1,8 @@
 import { Component, PLATFORM_ID, Inject, afterNextRender } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { RegistercompanyComponent } from '../registercompany/registercompany';
+import { RegistercompanyComponent } from '../Register-LoginIn/registercompany/registercompany';
 import { ChooseRole } from '../choose-role/choose-role';
-import { Registerperson } from '../registerperson/registerperson';
+import { Registerperson } from '../Register-LoginIn/registerperson/registerperson';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from "@angular/router";
 interface IFormData {

@@ -1,20 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthStateService } from '../Service/auth-state.service';
-import { CompanyProfile } from '../Models/company-registration.model';
+import { AuthStateService } from '../../Service/auth-state.service';
+import { CompanyProfile } from '../../Models/company-registration.model';
+import { ConfirmDialogComponent } from '../../confirm-dialog/confirm-dialog';
 
 @Component({
   selector: 'app-company-profile-component',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,ConfirmDialogComponent],
   templateUrl: './company-profile-component.html',
   styleUrl: './company-profile-component.scss',
 })
 export class CompanyProfileComponent implements OnInit {
   company: CompanyProfile | null = null;
   profileImage: string | null = null;
-
+  showLogoutDialog = false;
   constructor(
     private authState: AuthStateService,
     private router: Router
@@ -38,12 +39,17 @@ export class CompanyProfileComponent implements OnInit {
     reader.readAsDataURL(file);
   }
 
-  logout(): void {
-    this.authState.clearSession();
-    this.router.navigate(['/']);
-  }
+logout(): void {
+  this.showLogoutDialog = true;
+}
 
   get initials(): string {
     return this.company?.name?.charAt(0).toUpperCase() ?? 'W';
   }
+  onLogoutResult(confirmed: boolean): void {
+  this.showLogoutDialog = false;
+  if (confirmed) {
+    this.authState.clearSession();
+    this.router.navigate(['/']);
+  }}
 }

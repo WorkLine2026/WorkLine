@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Iamcompany } from '../iamcompany/iamcompany';
-import { PersonalComponent } from '../personal-component/personal-component';
+import { Iamcompany } from '../Company and Person/iamcompany/iamcompany';
+import { PersonalComponent } from '../Company and Person/personal-component/personal-component';
 import { RouterLink } from "@angular/router";
 @Component({
   selector: 'app-how-it-works',

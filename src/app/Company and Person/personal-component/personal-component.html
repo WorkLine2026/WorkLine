@@ -2,27 +2,24 @@
 
   <div class="modal" *ngIf="currentStep >= 0 && !submitted">
 
-    <!-- Progress bar -->
     <div class="prog-bg">
       <div class="prog-fill" [style.width.%]="progress"></div>
       
     </div>
     <button class="modal-close" (click)="closed.emit()" type="button">✕</button>
  
-    <!-- Step dots -->
     <div class="step-nav">
       <ng-container *ngFor="let label of stepLabels; let i = index">
         <div class="dot"
-             [class.done]="i < currentStep"
-             [class.active]="i === currentStep"
-             [title]="label"></div>
+            [class.done]="i < currentStep"
+            [class.active]="i === currentStep"
+            [title]="label"></div>
       </ng-container>
       <span class="dot-label">{{ currentStep + 1 }} / {{ totalSteps }}</span>
     </div>
 
     <div class="mbody">
 
-      <!-- ── STEP 1: Personal & Contact ── -->
       <div *ngIf="currentStep === 0" [class.anim-forward]="direction === 'forward'" [class.anim-back]="direction === 'back'">
         <p class="slabel">ნაბიჯი 1 / 5 — პირადი & საკონტაქტო</p>
         <p class="stitle">გვიამბე შენს შესახებ</p>
@@ -97,7 +94,6 @@
         </div>
       </div>
 
-      <!-- ── STEP 2: Experience & Education ── -->
       <div *ngIf="currentStep === 1" [class.anim-forward]="direction === 'forward'" [class.anim-back]="direction === 'back'">
         <p class="slabel">ნაბიჯი 2 / 5 — გამოცდილება & განათლება</p>
         <p class="stitle">სამუშაო გამოცდილება და განათლება</p>
@@ -106,9 +102,9 @@
           <label>სფეროები <span class="opt-label">(რამდენიც გინდა)</span></label>
           <div class="chip-group">
             <div class="chip"
-                 *ngFor="let s of sectorOptions"
-                 [class.active]="isChipActive(data.sectors, s)"
-                 (click)="toggleChip(data.sectors, s)">{{ s }}</div>
+                *ngFor="let s of sectorOptions"
+                [class.active]="isChipActive(data.sectors, s)"
+                (click)="toggleChip(data.sectors, s)">{{ s }}</div>
           </div>
         </div>
 
@@ -133,9 +129,9 @@
           <label>ენები</label>
           <div class="chip-group">
             <div class="chip"
-                 *ngFor="let l of langOptions"
-                 [class.active]="isChipActive(data.langs, l)"
-                 (click)="toggleChip(data.langs, l)">{{ l }}</div>
+                *ngFor="let l of langOptions"
+                [class.active]="isChipActive(data.langs, l)"
+                (click)="toggleChip(data.langs, l)">{{ l }}</div>
           </div>
         </div>
 
@@ -143,9 +139,9 @@
           <label>კომპ. უნარები <span class="opt-label">(სურვილისამებრ)</span></label>
           <div class="chip-group">
             <div class="chip"
-                 *ngFor="let s of computerOptions"
-                 [class.active]="isChipActive(data.computer, s)"
-                 (click)="toggleChip(data.computer, s)">{{ s }}</div>
+                *ngFor="let s of computerOptions"
+                [class.active]="isChipActive(data.computer, s)"
+                (click)="toggleChip(data.computer, s)">{{ s }}</div>
           </div>
         </div>
 
@@ -159,7 +155,6 @@
         </div>
       </div>
 
-      <!-- ── STEP 3: Certificates ── -->
       <div *ngIf="currentStep === 2" [class.anim-forward]="direction === 'forward'" [class.anim-back]="direction === 'back'">
         <p class="slabel">ნაბიჯი 3 / 5 — სერტიფიკატები & ლიცენზიები</p>
         <p class="stitle">სერტიფიკატები და ლიცენზიები</p>
@@ -168,9 +163,9 @@
           <label>სწრაფი არჩევანი</label>
           <div class="chip-group">
             <div class="chip"
-                 *ngFor="let c of certOptions"
-                 [class.active]="isChipActive(data.certs, c)"
-                 (click)="toggleChip(data.certs, c)">{{ c }}</div>
+                *ngFor="let c of certOptions"
+                [class.active]="isChipActive(data.certs, c)"
+                (click)="toggleChip(data.certs, c)">{{ c }}</div>
           </div>
         </div>
 
@@ -202,7 +197,6 @@
         </div>
       </div>
 
-      <!-- ── STEP 4: Health ── -->
       <div *ngIf="currentStep === 3" [class.anim-forward]="direction === 'forward'" [class.anim-back]="direction === 'back'">
         <p class="slabel">ნაბიჯი 4 / 5 — ჯანმრთელობა & შეზღუდვები</p>
         <p class="stitle">ჯანმრთელობა და სამუშაო შეზღუდვები</p>
@@ -228,9 +222,9 @@
           <label>სამედიცინო წიგნაკი</label>
           <div class="avail-grid medbook-grid">
             <div class="avail-card"
-                 *ngFor="let m of medbookOptions"
-                 [class.active]="data.medbook === m.v"
-                 (click)="data.medbook = m.v">
+                *ngFor="let m of medbookOptions"
+                [class.active]="data.medbook === m.v"
+                (click)="data.medbook = m.v">
               <p class="av-t">{{ m.t }}</p>
               <p class="av-s" *ngIf="m.s">{{ m.s }}</p>
             </div>
@@ -248,7 +242,6 @@
         </p>
       </div>
 
-      <!-- ── STEP 5: Availability ── -->
       <div *ngIf="currentStep === 4" [class.anim-forward]="direction === 'forward'" [class.anim-back]="direction === 'back'">
         <p class="slabel">ნაბიჯი 5 / 5 — ხელმისაწვდომობა & ფოტო</p>
         <p class="stitle">როდის ხარ თავისუფალი?</p>
@@ -257,9 +250,9 @@
           <label>ხელმისაწვდომობა</label>
           <div class="avail-grid">
             <div class="avail-card"
-                 *ngFor="let a of availOptions"
-                 [class.active]="data.avail === a.v"
-                 (click)="data.avail = a.v">
+                *ngFor="let a of availOptions"
+                [class.active]="data.avail === a.v"
+                (click)="data.avail = a.v">
               <p class="av-t">{{ a.t }}</p>
               <p class="av-s">{{ a.s }}</p>
             </div>
@@ -270,14 +263,14 @@
           <label>სასურველი სამუშაო საათები</label>
           <div class="chip-group">
             <div class="chip"
-                 *ngFor="let s of scheduleOptions"
-                 [class.active]="isChipActive(data.schedule, s)"
-                 (click)="toggleChip(data.schedule, s)">{{ s }}</div>
+                *ngFor="let s of scheduleOptions"
+                [class.active]="isChipActive(data.schedule, s)"
+                (click)="toggleChip(data.schedule, s)">{{ s }}</div>
           </div>
         </div>
 
         <div class="row2" style="margin-top:.5rem">
-          <div class="field">
+          <div class="field" [class.has-error]="errors['salary']">
             <label>სასურველი ანაზღაურება</label>
             <input type="number" placeholder="ლარი / თვეში" [(ngModel)]="data.salary">
           </div>
@@ -291,12 +284,11 @@
           </div>
         </div>
 
-        <div class="err-msg" [class.show]="errors['avail']">
-          გთხოვთ მონიშნოთ ხელმისაწვდომობა
+        <div class="err-msg" [class.show]="errors['avail'] || errors['salary']">
+          გთხოვთ მონიშნოთ ხელმისაწვდომობა და შეიყვანოთ სასურველი ანაზღაურება
         </div>
       </div>
 
-      <!-- ── Navigation buttons ── -->
       <div class="btn-row">
         <button class="btn-back" *ngIf="currentStep > 0" type="button" (click)="back()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
@@ -311,9 +303,6 @@
     </div>
   </div>
 
-  <!-- ════════════════════════════════════════
-       SUCCESS SCREEN
-  ════════════════════════════════════════ -->
   <div class="modal success-modal" *ngIf="submitted">
     <div class="prog-bg">
       <div class="prog-fill" style="width: 100%"></div>
@@ -323,8 +312,13 @@
         <div class="s-icon">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
-        <p class="s-title">გამარჯობა, {{ data.fname }}!</p>
-        <p class="s-sub">შენი პროფილი მიღებულია.<br>WorkLine გაცნობებს პირველი შეთავაზებისთანავე.</p>
+        
+        <p class="s-title">დიდი მადლობა, {{ data.fname }}!</p>
+        <p class="s-sub">
+          შენი პროფილი წარმატებით მივიღეთ.<br>
+          ჩვენი HR გუნდი უკვე შეუდგა მონაცემების განხილვას.<br>
+          <strong>WorkLine</strong> დაგიკავშირდება პირველივე შესაფერისი ვაკანსიის გამოჩენისთანავე!
+        </p>
 
         <div class="s-chips">
           <span class="s-chip" *ngIf="data.city">📍 {{ data.city }}</span>

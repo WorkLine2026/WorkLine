@@ -1,0 +1,22 @@
+<div class="login-wrapper">
+  <div class="login-box">
+    <h2>ადმინ პანელი</h2>
+    <p>შედი სისტემაში</p>
+
+    <div class="error" *ngIf="error">{{ error }}</div>
+
+    <div class="field">
+      <label>ელ-ფოსტა</label>
+      <input [(ngModel)]="email" type="email" placeholder="admin@workline.ge" />
+    </div>
+
+    <div class="field">
+      <label>პაროლი</label>
+      <input [(ngModel)]="password" type="password" placeholder="••••••••" />
+    </div>
+
+    <button (click)="login()" [disabled]="loading">
+      {{ loading ? 'იტვირთება...' : 'შესვლა' }}
+    </button>
+  </div>
+</div>

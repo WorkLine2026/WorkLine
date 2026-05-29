@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { AuthService } from '../Service/auth.service';
-import { AuthStateService } from '../Service/auth-state.service';
+import { AuthService } from '../../Service/auth.service';
+import { AuthStateService } from '../../Service/auth-state.service';
 
 @Component({
   selector: 'app-login-in',
@@ -36,23 +36,37 @@ export class Login {
     private authState:   AuthStateService
   ) {}
 
-  submit(): void {
-    this.submitted  = true;
-    this.loginError = '';
+ submit(): void {
+  this.submitted  = true;
+  this.loginError = '';
 
-    if (!this.email || !this.password) return;
+  if (!this.email || !this.password) return;
 
-    if (this.role === 'company' && !/^\d{9}$/.test(this.companyCode)) {
-      this.companyCodeError = 'საიდენტიფიკაციო კოდი უნდა შეიცავდეს ზუსტად 9 ციფრს';
-      return;
-    }
+  if (this.role === 'company' && !/^\d{9}$/.test(this.companyCode)) {
+    this.companyCodeError = 'საიდენტიფიკაციო კოდი უნდა შეიცავდეს ზუსტად 9 ციფრს';
+    return;
+  }
 
-    this.isLoading = true;
+  this.isLoading = true;
 
+  if (this.role === 'worker') {
+    this.authService.loginPerson(this.email.trim().toLowerCase(), this.password)
+      .subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.closed.emit();
+          this.router.navigate(['/person/profile']);
+        },
+        error: (err: Error) => {
+          this.isLoading  = false;
+          this.loginError = err.message;
+        }
+      });
+  } else {
     this.authService.loginCompany({
       email:              this.email.trim().toLowerCase(),
       password:           this.password,
-      identificationCode: this.role === 'company' ? this.companyCode : undefined
+      identificationCode: this.companyCode
     }).subscribe({
       next: (res) => {
         this.isLoading = false;
@@ -66,6 +80,7 @@ export class Login {
       }
     });
   }
+}
 
   onForgotPassword(): void {
     this.forgotRequested.emit();

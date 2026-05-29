@@ -2,10 +2,10 @@ import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ChangeDetectorRef, Component, HostListener, Inject, OnDestroy, OnInit, PLATFORM_ID } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ChooseRole } from '../choose-role/choose-role';
-import { RegistercompanyComponent } from '../registercompany/registercompany';
-import { Registerperson } from '../registerperson/registerperson';
-import { Login } from '../login-in/login-in';
-import { Forgotpassword } from '../forgotpassword/forgotpassword';
+import { RegistercompanyComponent } from '../Register-LoginIn/registercompany/registercompany';
+import { Registerperson } from '../Register-LoginIn/registerperson/registerperson';
+import { Login } from '../Register-LoginIn/login-in/login-in';
+import { Forgotpassword } from '../Register-LoginIn/forgotpassword/forgotpassword';
 import { AuthStateService } from '../Service/auth-state.service';
 
 @Component({

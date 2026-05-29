@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RegistercompanyComponent } from '../registercompany/registercompany';
+import { RegistercompanyComponent } from '../Register-LoginIn/registercompany/registercompany';
 import { ChooseRole } from '../choose-role/choose-role';
-import { Registerperson } from '../registerperson/registerperson';
+import { Registerperson } from '../Register-LoginIn/registerperson/registerperson';
 @Component({
   selector: 'app-candidates',
   standalone: true,

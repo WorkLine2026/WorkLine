@@ -1,0 +1,316 @@
+<div class="adm-shell" [class.sidebar-collapsed]="sidebarCollapsed">
+
+  <!-- ══════════════════════════════════════════════════════ SIDEBAR ══ -->
+  <aside class="adm-sidebar">
+    <div class="adm-logo">
+      <div class="adm-logo-mark">W</div>
+      <span class="adm-logo-text">WorkLine</span>
+      <span class="adm-logo-badge">Admin</span>
+    </div>
+    <nav class="adm-nav">
+      <button class="adm-nav-item" [class.active]="activeSection === 'dashboard'" (click)="setSection('dashboard')">
+        <i class="ti ti-layout-dashboard"></i><span>დაფა</span>
+      </button>
+      <button class="adm-nav-item" [class.active]="activeSection === 'users'" (click)="setSection('users')">
+        <i class="ti ti-users"></i><span>მომხმარებლები</span>
+        <span class="adm-nav-count">{{ stats.totalUsers }}</span>
+      </button>
+      <button class="adm-nav-item" [class.active]="activeSection === 'companies'" (click)="setSection('companies')">
+        <i class="ti ti-building"></i><span>კომპანიები</span>
+        <span class="adm-nav-count">{{ stats.totalCompanies }}</span>
+      </button>
+      <button class="adm-nav-item" [class.active]="activeSection === 'workers'" (click)="setSection('workers')">
+        <i class="ti ti-user-search"></i><span>დასაქმების მსურველი</span>
+        <span class="adm-nav-count">{{ stats.totalWorkers }}</span>
+      </button>
+      <button class="adm-nav-item" [class.active]="activeSection === 'settings'" (click)="setSection('settings')">
+        <i class="ti ti-settings"></i><span>პარამეტრები</span>
+      </button>
+    </nav>
+    <div class="adm-sidebar-footer">
+      <div class="adm-admin-chip">
+        <div class="adm-admin-avatar">{{ adminUser?.name?.charAt(0) ?? 'A' }}</div>
+        <div class="adm-admin-info">
+          <span class="adm-admin-name">{{ adminUser?.name ?? 'ადმინისტრატორი' }}</span>
+          <span class="adm-admin-role">Superadmin</span>
+        </div>
+      </div>
+      <button class="adm-logout-btn" (click)="logout()" title="გამოსვლა">
+        <i class="ti ti-logout"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- ══════════════════════════════════════════════════════ MAIN ══════ -->
+  <div class="adm-content">
+
+    <header class="adm-topbar">
+      <button class="adm-collapse-btn" (click)="toggleSidebar()">
+        <i class="ti ti-layout-sidebar-left-collapse"></i>
+      </button>
+      <div class="adm-topbar-title">
+        <span *ngIf="activeSection === 'dashboard'">დაფა</span>
+        <span *ngIf="activeSection === 'users'">მომხმარებლები</span>
+        <span *ngIf="activeSection === 'companies'">კომპანიები</span>
+        <span *ngIf="activeSection === 'workers'">დასაქმების მსურველი</span>
+        <span *ngIf="activeSection === 'settings'">პარამეტრები</span>
+      </div>
+      <div class="adm-topbar-right">
+        <div class="adm-pending-badge" *ngIf="stats.pendingVerifications > 0">
+          <i class="ti ti-clock"></i> {{ stats.pendingVerifications }} ლოდინში
+        </div>
+        <span class="adm-date">{{ today | date:'d MMM, yyyy' }}</span>
+      </div>
+    </header>
+
+    <!-- ── DASHBOARD ── -->
+    <section class="adm-section" *ngIf="activeSection === 'dashboard'">
+      <div class="adm-stat-grid">
+        <div class="adm-stat-card adm-stat--gold">
+          <div class="adm-stat-icon"><i class="ti ti-users"></i></div>
+          <div class="adm-stat-body">
+            <span class="adm-stat-num">{{ stats.totalUsers }}</span>
+            <span class="adm-stat-lbl">სულ მომხმარებელი</span>
+            <span class="adm-stat-delta">+{{ stats.newUsersThisWeek }} ამ კვირაში</span>
+          </div>
+        </div>
+        <div class="adm-stat-card adm-stat--teal">
+          <div class="adm-stat-icon"><i class="ti ti-building"></i></div>
+          <div class="adm-stat-body">
+            <span class="adm-stat-num">{{ stats.totalCompanies }}</span>
+            <span class="adm-stat-lbl">სულ კომპანია</span>
+            <span class="adm-stat-delta">+{{ stats.newCompaniesThisWeek }} ამ კვირაში</span>
+          </div>
+        </div>
+        <div class="adm-stat-card adm-stat--blue">
+          <div class="adm-stat-icon"><i class="ti ti-briefcase"></i></div>
+          <div class="adm-stat-body">
+            <span class="adm-stat-num">{{ stats.activeJobs }}</span>
+            <span class="adm-stat-lbl">აქტიური ვაკანსია</span>
+          </div>
+        </div>
+        <div class="adm-stat-card adm-stat--green" (click)="setSection('workers')" style="cursor:pointer">
+          <div class="adm-stat-icon"><i class="ti ti-user-search"></i></div>
+          <div class="adm-stat-body">
+            <span class="adm-stat-num">{{ stats.totalWorkers }}</span>
+            <span class="adm-stat-lbl">დასაქმების მსურველი</span>
+          </div>
+        </div>
+        <div class="adm-stat-card adm-stat--amber" (click)="setSection('companies')" style="cursor:pointer">
+          <div class="adm-stat-icon"><i class="ti ti-clock"></i></div>
+          <div class="adm-stat-body">
+            <span class="adm-stat-num">{{ stats.pendingVerifications }}</span>
+            <span class="adm-stat-lbl">ლოდინის ვერიფ.</span>
+            <span class="adm-stat-delta adm-stat-delta--warn">საჭიროებს ყურადღებას</span>
+          </div>
+        </div>
+      </div>
+      <div class="adm-panel">
+        <div class="adm-panel-header"><span class="adm-panel-title">ბოლო აქტივობა</span></div>
+        <ul class="adm-feed">
+          <li *ngFor="let item of activityFeed" class="adm-feed-item" [class]="'feed--' + item.type">
+            <div class="adm-feed-icon"><i [class]="'ti ' + item.icon"></i></div>
+            <div class="adm-feed-body">
+              <span class="adm-feed-text">{{ item.text }}</span>
+              <span class="adm-feed-time">{{ item.time }}</span>
+            </div>
+          </li>
+          <li *ngIf="activityFeed.length === 0" class="adm-feed-item">
+            <div class="adm-feed-body"><span class="adm-feed-text">აქტივობა არ არის</span></div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ── USERS ── -->
+    <section class="adm-section" *ngIf="activeSection === 'users'">
+      <div class="adm-table-controls">
+        <div class="adm-search-wrap">
+          <i class="ti ti-search"></i>
+          <input class="adm-search" type="text" placeholder="სახელი, ელ-ფოსტა..." [(ngModel)]="userSearch">
+        </div>
+        <div class="adm-filter-tabs">
+          <button [class.active]="userStatusFilter === 'all'"       (click)="userStatusFilter = 'all'">ყველა</button>
+          <button [class.active]="userStatusFilter === 'active'"    (click)="userStatusFilter = 'active'">აქტიური</button>
+          <button [class.active]="userStatusFilter === 'pending'"   (click)="userStatusFilter = 'pending'">ლოდინში</button>
+          <button [class.active]="userStatusFilter === 'suspended'" (click)="userStatusFilter = 'suspended'">დაბლოკილი</button>
+        </div>
+      </div>
+      <div class="adm-panel adm-panel--table">
+        <div class="adm-panel-header"><span class="adm-panel-title">მომხმარებლები ({{ filteredUsers.length }})</span></div>
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>სახელი</th><th>ელ-ფოსტა</th><th>სფერო</th><th>ქალაქი</th>
+                <th>სტატუსი</th><th>ვერ.</th><th>რეგ. თარიღი</th><th>მოქმედება</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let u of filteredUsers" [class]="'row--' + u.status">
+                <td class="td-name">{{ u.firstName }} {{ u.lastName }}</td>
+                <td class="td-email">{{ u.email }}</td>
+                <td>{{ u.sector }}</td>
+                <td>{{ u.city }}</td>
+                <td><span class="adm-status-chip" [class]="'chip--' + u.status">
+                  {{ u.status === 'active' ? 'აქტიური' : u.status === 'pending' ? 'ლოდინში' : 'დაბლოკილი' }}
+                </span></td>
+                <td><i [class]="u.isVerified ? 'ti ti-shield-check verified-icon' : 'ti ti-shield-x unverified-icon'"></i></td>
+                <td>{{ u.registeredAt }}</td>
+                <td class="td-actions">
+                  <button class="adm-action-btn adm-action-btn--verify" *ngIf="!u.isVerified" (click)="verifyUser(u)" title="ვერიფიკაცია">
+                    <i class="ti ti-shield-check"></i>
+                  </button>
+                  <button class="adm-action-btn adm-action-btn--toggle" (click)="toggleUserStatus(u)"
+                    [title]="u.status === 'suspended' ? 'განბლოკვა' : 'დაბლოკვა'">
+                    <i [class]="u.status === 'suspended' ? 'ti ti-lock-open' : 'ti ti-lock'"></i>
+                  </button>
+                  <button class="adm-action-btn adm-action-btn--delete" (click)="deleteUser(u)" title="წაშლა">
+                    <i class="ti ti-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="filteredUsers.length === 0"><td colspan="8" class="td-empty">შედეგი ვერ მოიძებნა</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── COMPANIES ── -->
+    <section class="adm-section" *ngIf="activeSection === 'companies'">
+      <div class="adm-table-controls">
+        <div class="adm-search-wrap">
+          <i class="ti ti-search"></i>
+          <input class="adm-search" type="text" placeholder="კომპანიის სახელი, ელ-ფოსტა..." [(ngModel)]="companySearch">
+        </div>
+        <div class="adm-filter-tabs">
+          <button [class.active]="companyStatusFilter === 'all'"       (click)="companyStatusFilter = 'all'">ყველა</button>
+          <button [class.active]="companyStatusFilter === 'active'"    (click)="companyStatusFilter = 'active'">აქტიური</button>
+          <button [class.active]="companyStatusFilter === 'pending'"   (click)="companyStatusFilter = 'pending'">ლოდინში</button>
+          <button [class.active]="companyStatusFilter === 'suspended'" (click)="companyStatusFilter = 'suspended'">დაბლოკილი</button>
+        </div>
+      </div>
+      <div class="adm-panel adm-panel--table">
+        <div class="adm-panel-header"><span class="adm-panel-title">კომპანიები ({{ filteredCompanies.length }})</span></div>
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>კომპანია</th><th>ელ-ფოსტა</th><th>სფერო</th><th>ქალაქი</th>
+                <th>საიდ. კოდი</th><th>სტატუსი</th><th>ვერ.</th><th>მოქმედება</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of filteredCompanies" [class]="'row--' + c.status">
+                <td class="td-name">{{ c.name }}</td>
+                <td class="td-email">{{ c.email }}</td>
+                <td>{{ c.sector }}</td>
+                <td>{{ c.city }}</td>
+                <td class="td-code">{{ c.identificationCode }}</td>
+                <td><span class="adm-status-chip" [class]="'chip--' + c.status">
+                  {{ c.status === 'active' ? 'აქტიური' : c.status === 'pending' ? 'ლოდინში' : 'დაბლოკილი' }}
+                </span></td>
+                <td><i [class]="c.isVerified ? 'ti ti-shield-check verified-icon' : 'ti ti-shield-x unverified-icon'"></i></td>
+                <td class="td-actions">
+                  <button class="adm-action-btn adm-action-btn--verify" *ngIf="!c.isVerified" (click)="verifyCompany(c)" title="ვერიფიკაცია">
+                    <i class="ti ti-shield-check"></i>
+                  </button>
+                  <button class="adm-action-btn adm-action-btn--toggle" (click)="toggleCompanyStatus(c)"
+                    [title]="c.status === 'suspended' ? 'განბლოკვა' : 'დაბლოკვა'">
+                    <i [class]="c.status === 'suspended' ? 'ti ti-lock-open' : 'ti ti-lock'"></i>
+                  </button>
+                  <button class="adm-action-btn adm-action-btn--delete" (click)="deleteCompany(c)" title="წაშლა">
+                    <i class="ti ti-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="filteredCompanies.length === 0"><td colspan="8" class="td-empty">შედეგი ვერ მოიძებნა</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── WORKERS ── -->
+    <section class="adm-section" *ngIf="activeSection === 'workers'">
+      <div class="adm-table-controls">
+        <div class="adm-search-wrap">
+          <i class="ti ti-search"></i>
+          <input class="adm-search" type="text" placeholder="სახელი, ქალაქი, სფერო..." [(ngModel)]="workerSearch">
+        </div>
+      </div>
+      <div class="adm-panel adm-panel--table">
+        <div class="adm-panel-header">
+          <span class="adm-panel-title">დასაქმების მსურველი ({{ filteredWorkers.length }})</span>
+        </div>
+        <div class="adm-table-wrap">
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>სახელი</th>
+                <th>ტელეფონი</th>
+                <th>ქალაქი</th>
+                <th>სფეროები</th>
+                <th>გამოცდილება</th>
+                <th>ხელმისაწვდომობა</th>
+                <th>ანაზღაურება</th>
+                <th>მოქმედება</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let w of filteredWorkers">
+                <td class="td-name">{{ w.fname }} {{ w.lname }}</td>
+                <td>{{ w.phone || '—' }}</td>
+                <td>{{ w.city || '—' }}</td>
+                <td>{{ w.sectors && w.sectors.length > 0 ? w.sectors.slice(0, 2).join(', ') : '—' }}</td>
+                <td>{{ w.exp || '—' }}</td>
+                <td>{{ availLabel(w.avail) || '—' }}</td>
+                <td>{{ w.salary ? w.salary + ' ₾' : '—' }}</td>
+                <td class="td-actions">
+                  <button class="adm-action-btn adm-action-btn--delete" (click)="deleteWorker(w)" title="წაშლა">
+                    <i class="ti ti-trash"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="filteredWorkers.length === 0">
+                <td colspan="8" class="td-empty">დასაქმების მსურველი ვერ მოიძებნა</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SETTINGS ── -->
+    <section class="adm-section" *ngIf="activeSection === 'settings'">
+      <div class="adm-panel adm-settings-panel">
+        <div class="adm-panel-header"><span class="adm-panel-title">სისტემის პარამეტრები</span></div>
+        <div class="adm-settings-body">
+          <div class="adm-settings-row">
+            <div>
+              <p class="adm-settings-label">ადმინისტრატორის ელ-ფოსტა</p>
+              <p class="adm-settings-val">{{ adminUser?.email ?? '────' }}</p>
+            </div>
+            <button class="adm-btn adm-btn--ghost">შეცვლა</button>
+          </div>
+          <div class="adm-settings-row">
+            <div>
+              <p class="adm-settings-label">პაროლი</p>
+              <p class="adm-settings-val">••••••••••</p>
+            </div>
+            <button class="adm-btn adm-btn--ghost">შეცვლა</button>
+          </div>
+          <div class="adm-settings-row adm-settings-row--danger">
+            <div>
+              <p class="adm-settings-label">სისტემის გაწმენდა</p>
+              <p class="adm-settings-val">ტესტ-მონაცემების წაშლა</p>
+            </div>
+            <button class="adm-btn adm-btn--red">გაწმენდა</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>

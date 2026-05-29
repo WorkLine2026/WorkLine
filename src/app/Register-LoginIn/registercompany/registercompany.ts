@@ -3,14 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
-import { AuthService } from '../Service/auth.service';
-import { AuthStateService } from '../Service/auth-state.service';
+import { AuthService } from '../../Service/auth.service';
+import { AuthStateService } from '../../Service/auth-state.service';
 import {
   CompanyInfo,
   ContactInfo,
   PasswordStrength,
-  CompanyProfile
-} from '../Models/company-registration.model';
+  CompanyProfile,
+  VerifyResponse
+} from '../../Models/company-registration.model';
 
 @Component({
   selector: 'app-registercompany',
@@ -23,28 +24,23 @@ import {
 export class RegistercompanyComponent implements OnDestroy {
   @Output() closed = new EventEmitter<void>();
 
-  // ─── Step state ──────────────────────────────────────────────────────────────
   currentStep = 1;
   isLoading   = false;
 
-  // ─── Step 1 ──────────────────────────────────────────────────────────────────
   step1: CompanyInfo = { name: '', identificationCode: '', sector: '', city: '' };
   errors1: Partial<Record<keyof CompanyInfo, string>> = {};
 
-  // ─── Step 2 ──────────────────────────────────────────────────────────────────
   step2: ContactInfo = { phone: '', email: '', password: '', confirmPassword: '' };
   errors2: Partial<Record<keyof ContactInfo, string>> = {};
   showPassword        = false;
   showConfirmPassword = false;
 
-  // ─── Step 3 ──────────────────────────────────────────────────────────────────
   verificationCode: string[] = ['', '', '', '', '', ''];
   verifyError      = '';
   registeredEmail  = '';
   resendCooldown   = 0;
   private resendTimer?: ReturnType<typeof setInterval>;
 
-  // ─── Lookup data ─────────────────────────────────────────────────────────────
   readonly sectors = [
     'სუპერმარკეტი', 'რესტორანი / კაფე', 'სასტუმრო',
     'საწყობი', 'აფთიაქი', 'სავაჭრო ცენტრი', 'ქოლ-ცენტრი', 'სხვა'
@@ -64,7 +60,6 @@ export class RegistercompanyComponent implements OnDestroy {
     clearInterval(this.resendTimer);
   }
 
-  // ─── Validation: Step 1 ──────────────────────────────────────────────────────
   private validateStep1(): boolean {
     this.errors1 = {};
 
@@ -86,7 +81,6 @@ export class RegistercompanyComponent implements OnDestroy {
     return Object.keys(this.errors1).length === 0;
   }
 
-  // ─── Validation: Step 2 ──────────────────────────────────────────────────────
   private validateStep2(): boolean {
     this.errors2 = {};
 
@@ -120,7 +114,6 @@ export class RegistercompanyComponent implements OnDestroy {
     return Object.keys(this.errors2).length === 0;
   }
 
-  // ─── Password strength ───────────────────────────────────────────────────────
   get passwordStrength(): PasswordStrength {
     const p = this.step2.password;
     if (!p) return { score: 0, label: '', color: '' };
@@ -141,7 +134,6 @@ export class RegistercompanyComponent implements OnDestroy {
     return (this.passwordStrength.score / 5) * 100;
   }
 
-  // ─── Navigation ──────────────────────────────────────────────────────────────
   goNext(): void {
     if (this.validateStep1()) this.currentStep = 2;
   }
@@ -159,7 +151,6 @@ export class RegistercompanyComponent implements OnDestroy {
 
   close(): void { this.closed.emit(); }
 
-  // ─── Submit Step 2 → register API ───────────────────────────────────────────
   submit(): void {
     if (!this.validateStep2()) return;
     this.isLoading = true;
@@ -185,7 +176,6 @@ export class RegistercompanyComponent implements OnDestroy {
     });
   }
 
-  // ─── Step 3: code inputs ─────────────────────────────────────────────────────
   onCodeInput(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
     const val   = input.value.replace(/\D/g, '');
@@ -217,17 +207,16 @@ export class RegistercompanyComponent implements OnDestroy {
 
   get fullCode(): string { return this.verificationCode.join(''); }
 
-  // ─── Verify code → save session ─────────────────────────────────────────────
   verifyCode(): void {
     if (this.fullCode.length !== 6 || this.isLoading) return;
     this.isLoading   = true;
     this.verifyError = '';
 
-    this.authService.verifyEmail({
+    this.authService.verifyCompanyEmail({
       email: this.registeredEmail,
       code:  this.fullCode
     }).subscribe({
-      next: (res) => {
+      next: (res: VerifyResponse) => {
         this.isLoading = false;
 
         const fullProfile: CompanyProfile = {
@@ -250,12 +239,11 @@ export class RegistercompanyComponent implements OnDestroy {
     });
   }
 
-  // ─── Resend code ─────────────────────────────────────────────────────────────
   resendCode(): void {
     if (this.resendCooldown > 0 || this.isLoading) return;
     this.isLoading = true;
 
-    this.authService.resendCode({ email: this.registeredEmail }).subscribe({
+    this.authService.resendCompanyCode({ email: this.registeredEmail }).subscribe({
       next:  () => { this.isLoading = false; this.startResendCooldown(); },
       error: () => { this.isLoading = false; }
     });
@@ -270,7 +258,6 @@ export class RegistercompanyComponent implements OnDestroy {
     }, 1000);
   }
 
-  // ─── Input sanitizers ────────────────────────────────────────────────────────
   onIdCodeInput(): void {
     this.step1.identificationCode = this.step1.identificationCode.replace(/\D/g, '');
     this.errors1.identificationCode = undefined;

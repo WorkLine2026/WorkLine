@@ -1,0 +1,179 @@
+<div class="pp-page">
+
+  <!-- ── Sidebar ── -->
+  <aside class="pp-sidebar">
+
+    <div class="pp-avatar-wrap">
+      <div class="pp-avatar">
+        <span class="pp-avatar-initials">{{ initials }}</span>
+        <button class="pp-avatar-edit" title="სურათის შეცვლა">
+          <i class="ti ti-camera" aria-hidden="true"></i>
+        </button>
+      </div>
+      <div class="pp-status-dot" [class.online]="isOnline"></div>
+    </div>
+
+    <h2 class="pp-name">{{ user.firstName }} {{ user.lastName }}</h2>
+    <p class="pp-sector-label">{{ user.sector }}</p>
+
+    <div class="pp-badge-row">
+      <span class="pp-badge pp-badge--avail">{{ user.availability }}</span>
+      <span class="pp-badge pp-badge--exp">{{ experienceLabel }}</span>
+    </div>
+
+    <div class="pp-divider"></div>
+
+    <ul class="pp-meta-list">
+      <li>
+        <i class="ti ti-map-pin" aria-hidden="true"></i>
+        <span>{{ user.city }}</span>
+      </li>
+      <li>
+        <i class="ti ti-phone" aria-hidden="true"></i>
+        <span>{{ user.phone }}</span>
+      </li>
+      <li>
+        <i class="ti ti-mail" aria-hidden="true"></i>
+        <span>{{ user.email }}</span>
+      </li>
+      <li>
+        <i class="ti ti-calendar" aria-hidden="true"></i>
+        <span>{{ user.birthDate | date:'dd MMM, yyyy' }}</span>
+      </li>
+      <li>
+        <i class="ti ti-id-badge" aria-hidden="true"></i>
+        <span>{{ user.idNumber }}</span>
+      </li>
+    </ul>
+
+    <div class="pp-divider"></div>
+
+    <p class="pp-section-label">სამუშაო გრაფიკი</p>
+    <div class="pp-chips">
+      <span *ngFor="let s of user.schedules" class="pp-chip">{{ s }}</span>
+      <span *ngIf="!user.schedules || user.schedules.length === 0" class="pp-chip pp-chip--empty">
+        მითითებული არ არის
+      </span>
+    </div>
+
+    <div class="pp-divider"></div>
+
+    <div class="pp-verify-block" [class.verified]="user.isVerified">
+      <i [class]="user.isVerified ? 'ti ti-shield-check' : 'ti ti-shield-x'" aria-hidden="true"></i>
+      <span>{{ user.isVerified ? 'ვერიფიცირებული' : 'ვერ ვერიფიცირებული' }}</span>
+    </div>
+
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="pp-main">
+
+    <!-- Header bar -->
+    <div class="pp-topbar">
+      <div>
+        <h1 class="pp-greeting">გამარჯობა, {{ user.firstName }}!</h1>
+        <p class="pp-date-line">{{ today | date:'EEEE, d MMMM yyyy' }}</p>
+      </div>
+      <div class="pp-topbar-actions">
+        <button class="pp-btn pp-btn--ghost" (click)="editProfile()">
+          <i class="ti ti-edit" aria-hidden="true"></i> პროფილის რედაქტირება
+        </button>
+        <button class="pp-btn pp-btn--danger" (click)="logout()">
+          <i class="ti ti-logout" aria-hidden="true">გამოსვლა</i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Stat cards -->
+    <div class="pp-stats-grid">
+      <div class="pp-stat-card pp-stat-card--blue">
+        <i class="ti ti-eye" aria-hidden="true"></i>
+        <span class="pp-stat-num">{{ stats.views }}</span>
+        <span class="pp-stat-lbl">პროფილის ნახვა</span>
+      </div>
+      <div class="pp-stat-card pp-stat-card--teal">
+        <i class="ti ti-briefcase" aria-hidden="true"></i>
+        <span class="pp-stat-num">{{ stats.applications }}</span>
+        <span class="pp-stat-lbl">განაცხადი</span>
+      </div>
+      <div class="pp-stat-card pp-stat-card--amber">
+        <i class="ti ti-star" aria-hidden="true"></i>
+        <span class="pp-stat-num">{{ stats.saved }}</span>
+        <span class="pp-stat-lbl">შენახული ვაკანსია</span>
+      </div>
+      <div class="pp-stat-card pp-stat-card--coral">
+        <i class="ti ti-message" aria-hidden="true"></i>
+        <span class="pp-stat-num">{{ stats.messages }}</span>
+        <span class="pp-stat-lbl">შეუხსნელი შეტყობინება</span>
+      </div>
+    </div>
+
+    <!-- Profile completeness -->
+    <div class="pp-card pp-completeness-card">
+      <div class="pp-card-header">
+        <span class="pp-card-title">პროფილის სისრულე</span>
+        <span class="pp-complete-pct">{{ completeness }}%</span>
+      </div>
+      <div class="pp-progress-track">
+        <div class="pp-progress-fill" [style.width.%]="completeness"></div>
+      </div>
+      <div class="pp-complete-steps">
+        <div *ngFor="let step of completenessSteps" class="pp-complete-step"
+          [class.done]="step.done">
+          <i [class]="step.done ? 'ti ti-circle-check' : 'ti ti-circle-dashed'" aria-hidden="true"></i>
+          <span>{{ step.label }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent activity -->
+    <div class="pp-card">
+      <div class="pp-card-header">
+        <span class="pp-card-title">ბოლო აქტივობა</span>
+        <button class="pp-link-btn">ყველა →</button>
+      </div>
+      <ul class="pp-activity-list">
+        <li *ngFor="let item of recentActivity" class="pp-activity-item">
+          <div class="pp-activity-dot" [class]="'dot--' + item.type"></div>
+          <div class="pp-activity-body">
+            <p class="pp-activity-text">{{ item.text }}</p>
+            <span class="pp-activity-time">{{ item.time }}</span>
+          </div>
+        </li>
+        <li *ngIf="recentActivity.length === 0" class="pp-activity-empty">
+          <i class="ti ti-clock" aria-hidden="true"></i>
+          <span>აქტივობა ჯერ არ არის</span>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Danger zone -->
+    <div class="pp-card pp-danger-zone">
+      <div class="pp-card-header">
+        <span class="pp-card-title">ანგარიშის მართვა</span>
+      </div>
+      <div class="pp-danger-actions">
+        <div class="pp-danger-row">
+          <div>
+            <p class="pp-danger-label">პაროლის შეცვლა</p>
+            <p class="pp-danger-desc">გახადეთ ანგარიში უფრო დაცული</p>
+          </div>
+          <button class="pp-btn pp-btn--ghost" (click)="changePassword()">შეცვლა</button>
+        </div>
+        <div class="pp-danger-row pp-danger-row--red">
+          <div>
+            <p class="pp-danger-label">ანგარიშის წაშლა</p>
+            <p class="pp-danger-desc">ეს მოქმედება შეუქცევადია</p>
+          </div>
+          <button class="pp-btn pp-btn--red" (click)="deleteAccount()">წაშლა</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+<app-confirm-dialog
+  *ngIf="showLogoutDialog"
+  [data]="{ title: 'გამოსვლა', message: 'ნამდვილად გსურთ გამოსვლა?', confirmText: 'გამოსვლა', cancelText: 'გაუქმება' }"
+  (confirmed)="onLogoutResult($event)">
+</app-confirm-dialog>

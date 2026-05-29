@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, Output, EventEmitter } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { WorkerService } from '../../Service/Worker.service';
 
 export interface WorkerData {
   fname: string;
@@ -33,7 +35,8 @@ export interface WorkerData {
 
 @Component({
   selector: 'app-personal-component',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
+  providers: [WorkerService],
   templateUrl: './personal-component.html',
   styleUrl: './personal-component.scss',
 })
@@ -46,10 +49,16 @@ export class PersonalComponent {
   direction: 'forward' | 'back' = 'forward';
   submitted = false;
   shakeNext = false;
+  isLoading = false;
+  successMessage = '';
+  errorMessage = '';
+  workerId = '';
+
   data: WorkerData = this.emptyData();
   newCertInput = '';
   errors: Record<string, boolean> = {};
 
+  // აბსოლუტურად ყველა ორიგინალი მნიშვნელობა უცვლელად:
   cities = ['თბილისი', 'ბათუმი', 'ქუთაისი', 'რუსთავი', 'გორი', 'ზუგდიდი', 'ფოთი', 'სამტრედია'];
   genders = ['მამრობითი', 'მდედრობითი', 'სხვა'];
   sectorOptions = ['მოლარე', 'მიმტანი', 'საწყობი', 'ადმინი', 'ქოლ-ცენტრი', 'სამზარეულო', 'დამლაგებელი', 'მძღოლი', 'მცველი', 'ბარმენი', 'კასირი', 'პრომოუტერი', 'სხვა'];
@@ -58,26 +67,32 @@ export class PersonalComponent {
   langOptions = ['ქართული', 'ინგლისური', 'რუსული', 'გერმანული', 'თურქული', 'სომხური', 'სხვა'];
   computerOptions = ['Word / Excel', '1C', 'Canva', 'სალაროს პროგ.', 'ელ-ფოსტა', 'სხვა'];
   certOptions = ['Food Safety', 'HACCP', 'პირველი დახმარება', 'სამძღოლო (B)', 'სამძღოლო (C/D)', 'ფარმაცევტი', 'ელექტრიკოსი', 'შემდუღებელი', 'ბუღალტერი', 'სხვა'];
+  
   restrictionOptions = [
-    { id: 'h-back',   label: 'ზურგის პრობლემები',      sub: 'მძიმე ტვირთის ტარება შეზღუდული' },
-    { id: 'h-stand',  label: 'დგომა 8+ საათი',          sub: 'ფეხზე დგომა გახანგრძლივებული' },
-    { id: 'h-lift',   label: 'მძიმე ტვირთი (20+ კგ)',   sub: 'ფიზიკური დატვირთვა' },
+    { id: 'h-back', label: 'ზურგის პრობლემები', sub: 'მძიმე ტვირთის ტარება შეზღუდული' },
+    { id: 'h-stand', label: 'დგომა 8+ საათი', sub: 'ფეხზე დგომა გახანგრძლივებული' },
+    { id: 'h-lift', label: 'მძიმე ტვირთი (20+ კგ)', sub: 'ფიზიკური დატვირთვა' },
     { id: 'h-screen', label: 'ეკრანთან მუშაობა 8+ სთ', sub: 'კომპიუტერი / კასა' },
-    { id: 'h-outdoor',label: 'გარე სამუშაო',            sub: 'ამინდის ზემოქმედება' },
+    { id: 'h-outdoor', label: 'გარე სამუშაო', sub: 'ამინდის ზემოქმედება' },
   ];
+  
   medbookOptions = [
-    { v: 'yes',     t: 'გაქვს',      s: 'მოქმედი' },
+    { v: 'yes', t: 'გაქვს', s: 'მოქმედი' },
     { v: 'expired', t: 'ვადაგასული', s: 'განახლება საჭ.' },
-    { v: 'no',      t: 'არ გაქვს',   s: '' },
+    { v: 'no', t: 'არ გაქვს', s: '' },
   ];
+  
   availOptions = [
-    { v: 'asap',      t: 'ახლავე მზად', s: 'დაუყოვნებლივ' },
-    { v: 'week',      t: 'ამ კვირაში',  s: '7 დღის განმ.' },
-    { v: 'twoweeks',  t: '2 კვირაში',   s: '14 დღის განმ.' },
-    { v: 'month',     t: '1 თვეში',     s: '30 დღის განმ.' },
+    { v: 'asap', t: 'ახლავე მზად', s: 'დაუყოვნებლივ' },
+    { v: 'week', t: 'ამ კვირაში', s: '7 დღის განმ.' },
+    { v: 'twoweeks', t: '2 კვირაში', s: '14 დღის განმ.' },
+    { v: 'month', t: '1 თვეში', s: '30 დღის განმ.' },
   ];
+  
   scheduleOptions = ['სრული განაკვეთი', 'ნახევარი', 'დილა (8–14)', 'საღამო (14–22)', 'ღამე (22–8)', 'შაბათ-კვირა', 'მოქნილი'];
   stepLabels = ['პირადი & საკონტაქტო', 'გამოცდილება & განათლება', 'სერტიფიკატები', 'ჯანმრთელობა', 'ხელმისაწვდომობა'];
+
+  constructor(private workerService: WorkerService) { }
 
   emptyData(): WorkerData {
     return {
@@ -109,7 +124,7 @@ export class PersonalComponent {
       this.currentStep++;
       this.errors = {};
     } else {
-      this.submitted = true;
+      this.submitForm();
     }
   }
 
@@ -121,22 +136,58 @@ export class PersonalComponent {
     }
   }
 
-  validate(): boolean {
+ validate(): boolean {
     this.errors = {};
+    
+    // ნაბიჯი 1-ის ვალიდაცია: პირადი & საკონტაქტო
     if (this.currentStep === 0) {
-      if (!this.data.fname) this.errors['fname'] = true;
-      if (!this.data.lname) this.errors['lname'] = true;
-      if (!this.data.city)  this.errors['city']  = true;
-      if (!this.data.phone) this.errors['phone'] = true;
+      if (!this.data.fname?.trim()) this.errors['fname'] = true;
+      if (!this.data.lname?.trim()) this.errors['lname'] = true;
+      if (!this.data.city) this.errors['city'] = true;
+      if (!this.data.phone?.trim()) this.errors['phone'] = true;
     }
+    
+    // ნაბიჯი 2-ის ვალიდაცია: გამოცდილება & განათლება
     if (this.currentStep === 1) {
       if (this.data.sectors.length === 0) this.errors['sectors'] = true;
       if (!this.data.exp) this.errors['exp'] = true;
     }
+    
+    // ნაბიჯი 5-ის ვალიდაცია: ხელმისაწვდომობა & ანაზღაურება (აქ გასწორდა შეცდომა)
     if (this.currentStep === 4) {
       if (!this.data.avail) this.errors['avail'] = true;
+      if (this.data.salary === null || this.data.salary === undefined || !this.data.salary.toString().trim()) {
+        this.errors['salary'] = true;
+      }
     }
+    
     return Object.keys(this.errors).length === 0;
+  }
+
+  submitForm(): void {
+    if (!this.data.email) {
+      this.errorMessage = 'ელ-ფოსტა აუცილებელია ხელმისაწვდომი საშუალებისთვის';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    this.workerService.createWorker(this.data).subscribe({
+      next: (response) => {
+        this.isLoading = false;
+        this.submitted = true;
+        this.successMessage = response.message || 'პროფილი წარმატებით შენახულია';
+        this.workerId = response.workerId || '';
+        console.log('✅ Worker created successfully:', response);
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.errorMessage = error.error || 'შეცდომა ფორმის გაგზავნის დროს';
+        console.error('❌ Error creating worker:', error);
+      }
+    });
   }
 
   toggleChip(arr: string[], val: string): void {
@@ -184,21 +235,39 @@ export class PersonalComponent {
   }
 
   onEnterCert(event: KeyboardEvent): void {
-    if (event.key === 'Enter') { event.preventDefault(); this.addCert(); }
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.addCert();
+    }
   }
 
   availLabel(v: string): string {
-    const map: Record<string, string> = { asap: 'ახლავე მზად', week: 'ამ კვირაში', twoweeks: '2 კვირაში', month: '1 თვეში' };
+    const map: Record<string, string> = { 
+      asap: 'ახლავე მზად', 
+      week: 'ამ კვირაში', 
+      twoweeks: '2 კვირაში', 
+      month: '1 თვეში' 
+    };
     return map[v] || v;
   }
 
   restrictionLabel(id: string): string {
-    const map: Record<string, string> = { 'h-back': 'ზურგი', 'h-stand': 'დგომა 8სთ', 'h-lift': 'მძ. ტვირთი', 'h-screen': 'ეკრანი 8სთ', 'h-outdoor': 'გარე სამუშ.' };
+    const map: Record<string, string> = { 
+      'h-back': 'ზურგი', 
+      'h-stand': 'დგომა 8სთ', 
+      'h-lift': 'მძ. ტვირთი', 
+      'h-screen': 'ეკრანი 8სთ', 
+      'h-outdoor': 'გარე სამუშ.' 
+    };
     return map[id] || id;
   }
 
   medbookLabel(v: string): string {
-    const map: Record<string, string> = { yes: 'მოქმედი', expired: 'ვადაგასული', no: 'არ გაქვს' };
+    const map: Record<string, string> = { 
+      yes: 'მოქმედი', 
+      expired: 'ვადაგასული', 
+      no: 'არ გაქვს' 
+    };
     return map[v] || v;
   }
 
@@ -208,7 +277,9 @@ export class PersonalComponent {
     this.errors = {};
     this.data = this.emptyData();
     this.newCertInput = '';
-    this.closed.emit(); // ← home-ს ეუბნება დახურე
+    this.successMessage = '';
+    this.errorMessage = '';
+    this.workerId = '';
   }
 
   close(): void {

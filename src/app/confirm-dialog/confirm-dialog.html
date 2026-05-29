@@ -1,0 +1,10 @@
+<div class="modal-overlay" (click)="onCancel()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <h2 class="modal-title">{{ data.title }}</h2>
+    <p class="modal-message">{{ data.message }}</p>
+    <div class="modal-actions">
+      <button class="btn-cancel" (click)="onCancel()">{{ data.cancelText || 'გაუქმება' }}</button>
+      <button class="btn-confirm" (click)="onConfirm()">{{ data.confirmText || 'დადასტურება' }}</button>
+    </div>
+  </div>
+</div>
