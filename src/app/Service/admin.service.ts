@@ -61,6 +61,40 @@ export interface WorkerRow {
   medbook: string;
 }
 
+// ═══════════════════════════════════════════════════════
+// ✨ ახალი Interface: ვაკანსია
+// ═══════════════════════════════════════════════════════
+export interface VacancyRow {
+  _id?: string;
+  id?: string;
+  companyName: string;
+  sector: string;
+  positions: string[];
+  headcount: string;
+  expRequired: string;
+  langs: string[];
+  certsRequired: string[];
+  requirements?: string;
+  duration: string;
+  schedule: string[];
+  salaryFrom: string;
+  salaryTo: string;
+  payType: string;
+  benefits: string[];
+  city: string;
+  district?: string;
+  address?: string;
+  startDate: string;
+  specificDate?: string;
+  workEnv: string;
+  notes?: string;
+  contactName: string;
+  phone: string;
+  email?: string;
+  createdAt?: string;
+  status?: 'active' | 'closed';
+}
+
 export interface ActivityItem {
   icon: string;
   text: string;
@@ -124,6 +158,22 @@ export class AdminService {
 
   deleteCompany(companyId: string): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.api}/companies/${companyId}`);
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // ✨ ახალი მეთოდები: ვაკანსია
+  // ═══════════════════════════════════════════════════════
+
+  getVacancies(): Observable<VacancyRow[]> {
+    return this.http.get<VacancyRow[]>(`${this.api}/vacancies`);
+  }
+
+  closeVacancy(vacancyId: string): Observable<{ message: string }> {
+    return this.http.put<{ message: string }>(`${this.api}/vacancies/${vacancyId}/close`, {});
+  }
+
+  deleteVacancy(vacancyId: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.api}/vacancies/${vacancyId}`);
   }
 
   logout(): Observable<{ message: string }> {

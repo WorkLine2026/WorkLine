@@ -338,8 +338,8 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
           უკან
         </button>
-        <button class="btn-next" type="button" (click)="next()" [class.shake]="shakeNext">
-          {{ currentStep === totalSteps - 1 ? 'გაგზავნა' : 'შემდეგი' }}
+        <button class="btn-next" type="button" (click)="next()" [class.shake]="shakeNext" [disabled]="isLoading">
+          {{ isLoading ? 'იტვირთება...' : (currentStep === totalSteps - 1 ? 'გაგზავნა' : 'შემდეგი') }}
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
       </div>
@@ -360,7 +360,7 @@
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <p class="s-title">გმადლობთ, {{ data.companyName }}!</p>
-        <p class="s-sub">თქვენი მოთხოვნა მიღებულია.<br>WorkLine დაგიკავშირდებათ 24 საათის განმავლობაში.</p>
+        <p class="s-sub">თქვენი მოთხოვნა მიღებულია.<br>WorkLine დაგიკავშირდებათ 24 საათის განმავლობაში.<br><strong>✉️ დადასტურების ემეილი გაეგზავნა თქვენი ელფოსტაზე</strong></p>
 
         <div class="s-chips">
           <span class="s-chip" *ngIf="data.city">📍 {{ data.city }}</span>
@@ -398,6 +398,9 @@
 
         <button class="btn-next" type="button" (click)="reset()">
           ახალი მოთხოვნა
+        </button>
+        <button class="btn-secondary" type="button" (click)="closeModal()">
+          დახურვა
         </button>
       </div>
     </div>

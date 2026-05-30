@@ -19,6 +19,10 @@
         <i class="ti ti-building"></i><span>კომპანიები</span>
         <span class="adm-nav-count">{{ stats.totalCompanies }}</span>
       </button>
+      <button class="adm-nav-item" [class.active]="activeSection === 'vacancies'" (click)="setSection('vacancies')">
+        <i class="ti ti-briefcase"></i><span>ვაკანსიები</span>
+        <span class="adm-nav-count">{{ stats.activeJobs }}</span>
+      </button>
       <button class="adm-nav-item" [class.active]="activeSection === 'workers'" (click)="setSection('workers')">
         <i class="ti ti-user-search"></i><span>დასაქმების მსურველი</span>
         <span class="adm-nav-count">{{ stats.totalWorkers }}</span>
@@ -52,6 +56,7 @@
         <span *ngIf="activeSection === 'dashboard'">დაფა</span>
         <span *ngIf="activeSection === 'users'">მომხმარებლები</span>
         <span *ngIf="activeSection === 'companies'">კომპანიები</span>
+        <span *ngIf="activeSection === 'vacancies'">ვაკანსიები</span>
         <span *ngIf="activeSection === 'workers'">დასაქმების მსურველი</span>
         <span *ngIf="activeSection === 'settings'">პარამეტრები</span>
       </div>
@@ -87,6 +92,14 @@
           <div class="adm-stat-body">
             <span class="adm-stat-num">{{ stats.activeJobs }}</span>
             <span class="adm-stat-lbl">აქტიური ვაკანსია</span>
+          </div>
+        </div>
+        <div class="adm-stat-card adm-stat--blue" (click)="setSection('vacancies')" style="cursor:pointer">
+          <div class="adm-stat-icon"><i class="ti ti-briefcase"></i></div>
+          <div class="adm-stat-body">
+            <span class="adm-stat-num">{{ stats.activeJobs }}</span>
+            <span class="adm-stat-lbl">სჭირდებათ კადრი</span>
+            <span class="adm-stat-delta" *ngIf="stats.activeJobs > 0">დააჭირე დეტალისთვის</span>
           </div>
         </div>
         <div class="adm-stat-card adm-stat--green" (click)="setSection('workers')" style="cursor:pointer">
@@ -230,6 +243,215 @@
           </table>
         </div>
       </div>
+    </section>
+
+    <!-- ── VACANCIES ── -->
+    <section class="adm-section" *ngIf="activeSection === 'vacancies'">
+      <div class="adm-table-controls">
+        <div class="adm-search-wrap">
+          <i class="ti ti-search"></i>
+          <input class="adm-search" type="text" placeholder="კომპანია, ქალაქი, პოზიცია..." [(ngModel)]="vacancySearch">
+        </div>
+      </div>
+
+      <div class="adm-vacancies-layout">
+        <!-- მარცხენა: სია -->
+        <div class="adm-vacancies-list">
+          <div class="adm-panel adm-panel--table">
+            <div class="adm-panel-header">
+              <span class="adm-panel-title">ვაკანსიები ({{ filteredVacancies.length }})</span>
+            </div>
+            <div class="adm-table-wrap">
+              <table class="adm-table adm-table--compact">
+                <thead>
+                  <tr>
+                    <th>კომპანია</th>
+                    <th>პოზიცია</th>
+                    <th>ქალაქი</th>
+                    <th>ხელმისაწვდ.</th>
+                    <th>მოქმედება</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let v of filteredVacancies" 
+                      (click)="selectVacancy(v)"
+                      [class.active]="selectedVacancy?._id === v._id || selectedVacancy?.id === v.id"
+                      [class.closed]="v.status === 'closed'">
+                    <td class="td-name">{{ v.companyName }}</td>
+                    <td>{{ (v.positions && v.positions.length > 0) ? v.positions.slice(0, 2).join(', ') : '—' }}</td>
+                    <td>{{ v.city || '—' }}</td>
+                    <td>{{ v.headcount || '—' }}</td>
+                    <td class="td-actions">
+                      <button class="adm-action-btn adm-action-btn--delete" 
+                              (click)="deleteVacancy(v); $event.stopPropagation()" 
+                              title="წაშლა">
+                        <i class="ti ti-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="filteredVacancies.length === 0">
+                    <td colspan="5" class="td-empty">ვაკანსია ვერ მოიძებნა</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- მარჯვენა: დეტალი -->
+        <div class="adm-vacancies-detail">
+          <div class="adm-panel" *ngIf="selectedVacancy as vacancy; else noSelection">
+            <div class="adm-panel-header">
+              <span class="adm-panel-title">ვაკანსია - {{ vacancy.companyName }}</span>
+              <button class="adm-close-detail-btn" (click)="clearVacancySelection()">✕</button>
+            </div>
+            <div class="adm-detail-body">
+              
+              <div class="detail-section">
+                <h4>კომპანია</h4>
+                <div class="detail-row">
+                  <span class="detail-key">სახელი:</span>
+                  <span class="detail-val">{{ vacancy.companyName }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-key">სექტორი:</span>
+                  <span class="detail-val">{{ vacancy.sector }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-key">კონტაქტი:</span>
+                  <span class="detail-val">{{ vacancy.contactName }} · {{ vacancy.phone }}</span>
+                </div>
+                <div class="detail-row" *ngIf="vacancy.email">
+                  <span class="detail-key">ელ-ფოსტა:</span>
+                  <span class="detail-val">{{ vacancy.email }}</span>
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <h4>სამუშაო მოთხოვნები</h4>
+                <div class="detail-row">
+                  <span class="detail-key">პოზიციები:</span>
+                  <span class="detail-val">{{ vacancy.positions.join(', ') || '—' }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-key">კადრების რ-ბა:</span>
+                  <span class="detail-val">{{ vacancy.headcount }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-key">გამოცდილება:</span>
+                  <span class="detail-val">{{ vacancy.expRequired || 'ნებისმიერი' }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-key">ენები:</span>
+                  <span class="detail-val">{{ vacancy.langs.join(', ') || '—' }}</span>
+                </div>
+                <div class="detail-row" *ngIf="vacancy.certsRequired.length">
+                  <span class="detail-key">სერტიფიკატები:</span>
+                  <span class="detail-val">{{ vacancy.certsRequired.join(', ') }}</span>
+                </div>
+                <div class="detail-row" *ngIf="vacancy.requirements">
+                  <span class="detail-key">დამატებითი:</span>
+                  <span class="detail-val detail-val--wrap">{{ vacancy.requirements }}</span>
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <h4>სამუშაო პირობები</h4>
+                <div class="detail-row">
+                  <span class="detail-key">ხანგრძლივობა:</span>
+                  <span class="detail-val">{{ vacancy.duration }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-key">სამუშაო საათები:</span>
+                  <span class="detail-val">{{ vacancy.schedule.join(', ') || '—' }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-key">გარემო:</span>
+                  <span class="detail-val">{{ vacancy.workEnv }}</span>
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <h4>ანაზღაურება</h4>
+                <div class="detail-row">
+                  <span class="detail-key">დიაპაზონი:</span>
+                  <span class="detail-val">
+                    {{ vacancy.salaryFrom }} 
+                    <span *ngIf="vacancy.salaryTo">– {{ vacancy.salaryTo }}</span>
+                    ₾
+                  </span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-key">სქემა:</span>
+                  <span class="detail-val">{{ vacancy.payType }}</span>
+                </div>
+                <div class="detail-row" *ngIf="vacancy.benefits.length">
+                  <span class="detail-key">შეღავათები:</span>
+                  <span class="detail-val">{{ vacancy.benefits.join(', ') }}</span>
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <h4>ადგილმდებარეობა & დაწყება</h4>
+                <div class="detail-row">
+                  <span class="detail-key">ქალაქი:</span>
+                  <span class="detail-val">{{ vacancy.city }}</span>
+                </div>
+                <div class="detail-row" *ngIf="vacancy.district">
+                  <span class="detail-key">რაიონი:</span>
+                  <span class="detail-val">{{ vacancy.district }}</span>
+                </div>
+                <div class="detail-row" *ngIf="vacancy.address">
+                  <span class="detail-key">მისამართი:</span>
+                  <span class="detail-val">{{ vacancy.address }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-key">დაწყება:</span>
+                  <span class="detail-val">{{ vacancy.startDate }}</span>
+                </div>
+                <div class="detail-row" *ngIf="vacancy.specificDate">
+                  <span class="detail-key">თარიღი:</span>
+                  <span class="detail-val">{{ vacancy.specificDate }}</span>
+                </div>
+              </div>
+
+              <div class="detail-section" *ngIf="vacancy.createdAt">
+                <div class="detail-row">
+                  <span class="detail-key">დამატებულია:</span>
+                  <span class="detail-val">{{ vacancy.createdAt | date:'d MMM, yyyy HH:mm' }}</span>
+                </div>
+                <div class="detail-row" *ngIf="vacancy.notes">
+                  <span class="detail-key">შენიშვნა:</span>
+                  <span class="detail-val detail-val--wrap">{{ vacancy.notes }}</span>
+                </div>
+              </div>
+
+              <div class="detail-actions">
+                <button class="adm-btn adm-btn--red" 
+                        *ngIf="vacancy.status !== 'closed'"
+                        (click)="closeVacancy(selectedVacancy!)">
+                  ✓ დახურვა
+                </button>
+                <button class="adm-btn adm-btn--ghost" 
+                        (click)="deleteVacancy(selectedVacancy!)">
+                  <i class="ti ti-trash"></i> წაშლა
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="adm-panel" *ngTemplateOutlet="noSelection"></div>
+        </div>
+      </div>
+
+      <ng-template #noSelection>
+        <div class="adm-panel adm-panel--empty">
+          <div class="adm-empty-state">
+            <i class="ti ti-inbox"></i>
+            <p>ვაკანსია აირჩიე სახელმწიფო მარცხნიდან</p>
+          </div>
+        </div>
+      </ng-template>
     </section>
 
     <!-- ── WORKERS ── -->
