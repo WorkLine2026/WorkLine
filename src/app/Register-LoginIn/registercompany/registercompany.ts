@@ -2,7 +2,7 @@ import { Component, EventEmitter, Output, ViewEncapsulation, OnDestroy } from '@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { timeout } from 'rxjs/operators';
+import { timeout, finalize } from 'rxjs/operators'; // ✅ დაამატე finalize
 
 import { AuthService } from '../../Service/auth.service';
 import { AuthStateService } from '../../Service/auth-state.service';
@@ -152,30 +152,40 @@ export class RegistercompanyComponent implements OnDestroy {
 
   close(): void { this.closed.emit(); }
 
+  // ✅ გამოსწორებული submit() finalize-ის მხარდაჭერით
   submit(): void {
     if (!this.validateStep2()) return;
     this.isLoading = true;
+    console.log('🚀 Submit clicked - loading started');
 
-    this.authService.registerCompany({
+    const payload = {
       company: { ...this.step1 },
       contact: {
         phone: this.step2.phone.trim().replace(/\s/g, ''),
         email: this.step2.email.trim().toLowerCase()
       },
       password: this.step2.password
-    }).pipe(
-      timeout(15000) // 15 წამის timeout
+    };
+
+    console.log('📤 Sending payload:', payload);
+
+    this.authService.registerCompany(payload).pipe(
+      timeout(15000), // 15 წამის timeout
+      finalize(() => {
+        console.log('🔚 Observable finalized - loading should stop');
+        this.isLoading = false; // ✅ ეს ყოველთვის ხმელდება!
+      })
     ).subscribe({
       next: (res) => {
-        this.isLoading       = false;
+        console.log('✅ NEXT called with response:', res);
         this.registeredEmail = res.email;
         this.currentStep     = 3;
         this.startResendCooldown();
+        console.log('✓ Moved to Step 3');
       },
-      error: (err: Error) => {
-        this.isLoading     = false;
+      error: (err: any) => {
+        console.error('❌ ERROR callback:', err);
         this.errors2.email = err.message || 'რეგისტრაციის შეცდომა';
-        console.error('Register error:', err);
       }
     });
   }
@@ -222,11 +232,11 @@ export class RegistercompanyComponent implements OnDestroy {
       email: this.registeredEmail,
       code:  this.fullCode
     }).pipe(
-      timeout(15000) // 15 წამის timeout
+      timeout(15000),
+      finalize(() => { this.isLoading = false; })
     ).subscribe({
       next: (res: VerifyResponse) => {
         console.log('✓ Verification successful');
-        this.isLoading = false;
 
         const fullProfile: CompanyProfile = {
           ...res.company,
@@ -240,7 +250,6 @@ export class RegistercompanyComponent implements OnDestroy {
       },
       error: (err: any) => {
         console.error('Verification error:', err);
-        this.isLoading        = false;
         this.verifyError      = err.message || 'კოდი არ სწორია ან ვადა გასულია';
         this.verificationCode = ['', '', '', '', '', ''];
         setTimeout(() =>
@@ -256,16 +265,15 @@ export class RegistercompanyComponent implements OnDestroy {
     console.log('Resending code to:', this.registeredEmail);
 
     this.authService.resendCompanyCode({ email: this.registeredEmail }).pipe(
-      timeout(15000)
+      timeout(15000),
+      finalize(() => { this.isLoading = false; })
     ).subscribe({
       next:  () => {
         console.log('✓ Code resent');
-        this.isLoading = false;
         this.startResendCooldown();
       },
       error: (err) => {
         console.error('Resend error:', err);
-        this.isLoading = false;
         this.verifyError = err.message || 'კოდის გაგზავნის შეცდომა';
       }
     });
