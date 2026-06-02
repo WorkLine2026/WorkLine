@@ -177,7 +177,7 @@
         <div *ngIf="verificationSuccess" class="rp-verify-success">
           <div class="rp-success-icon">✓</div>
           <p class="rp-success-text">ვერიფიკაცია დასრულდა!</p>
-          <p class="rp-success-sub">გადადიხართ...</p>
+          <p class="rp-success-sub">გkönig...</p>
         </div>
 
         <!-- Verify form -->
@@ -187,9 +187,11 @@
               class="rp-otp-input"
               [class.error]="verificationError"
               [class.loading]="isLoading"
-              type="text" inputmode="numeric" maxlength="6"
+              type="text" 
+              inputmode="numeric" 
+              maxlength="1"
               [value]="verificationCode[i]"
-              [disabled]="isLoading"
+              [disabled]="isLoading || verificationSuccess"
               (input)="onDigitInput($event, i)"
               (keydown)="onDigitKeydown($event, i)"
               (paste)="onDigitPaste($event, i)"

@@ -55,10 +55,6 @@ export interface PersonAuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  register(arg0: { phone: string; email: string; password: string; sector: string; experience: string; availability: string; schedules: string[]; firstName: string; lastName: string; birthDate: string; gender: string; idNumber: string; city: string; }) {
-    throw new Error('Method not implemented.');
-  }
-
   private readonly companyApi = `${environment.apiUrl}/auth`;
   private readonly personApi  = `${environment.apiUrl}/auth/person`;
 
@@ -96,12 +92,18 @@ export class AuthService {
 
   // ── Person ────────────────────────────────────────────────
 
+  /**
+   * ✓ იპირი რეგისტრაცია - ფაილობს გაგზავნას ელ-ფოსტის კოდი
+   */
   registerPerson(payload: PersonRegisterPayload): Observable<{ message: string }> {
     return this.http
       .post<{ message: string }>(`${this.personApi}/register`, payload)
       .pipe(catchError(this.handleError));
   }
 
+  /**
+   * ✓ მეილის ვერიფიკაცია OTP-ით
+   */
   verifyPersonEmail(payload: PersonVerifyPayload): Observable<PersonAuthResponse> {
     return this.http
       .post<PersonAuthResponse>(`${this.personApi}/verify-email`, payload)
@@ -111,12 +113,18 @@ export class AuthService {
       );
   }
 
+  /**
+   * ✓ კოდის ხელახლა გაგზავნა
+   */
   resendPersonCode(email: string): Observable<{ message: string }> {
     return this.http
       .post<{ message: string }>(`${this.personApi}/resend-code`, { email })
       .pipe(catchError(this.handleError));
   }
 
+  /**
+   * ✓ იპირი ლოგინი
+   */
   loginPerson(email: string, password: string): Observable<PersonAuthResponse> {
     return this.http
       .post<PersonAuthResponse>(`${this.personApi}/login`, { email, password })
@@ -128,19 +136,31 @@ export class AuthService {
 
   // ── Session helpers ───────────────────────────────────────
 
+  /**
+   * ✓ სესიის შენახვა localStorage-ში
+   */
   private savePersonSession(res: PersonAuthResponse): void {
     localStorage.setItem('wl_token', res.token);
     localStorage.setItem('wl_user',  JSON.stringify(res.user));
   }
 
+  /**
+   * ✓ ტოკენის მიღება
+   */
   getToken(): string | null {
     return localStorage.getItem('wl_token');
   }
 
+  /**
+   * ✓ დამოწმება: ჩვეულებრივი ისწავლის?
+   */
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
 
+  /**
+   * ✓ გამოსვლა / თხოვნის გასუფთავება
+   */
   logout(): void {
     localStorage.removeItem('wl_token');
     localStorage.removeItem('wl_user');
@@ -148,6 +168,9 @@ export class AuthService {
 
   // ── Error handler ─────────────────────────────────────────
 
+  /**
+   * ✓ შეცდომების მართვა HTTP მოთხოვნებისთვის
+   */
   private handleError(err: HttpErrorResponse): Observable<never> {
     const message =
       err.error?.message ||

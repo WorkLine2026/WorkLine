@@ -58,7 +58,9 @@ export class Registerperson implements OnDestroy {
     if (this.currentStep > 1) this.currentStep--;
   }
 
-  close(): void { this.closed.emit(); }
+  close(): void { 
+    this.closed.emit(); 
+  }
 
   private validateStep(step: number): boolean {
     if (step === 1) {
@@ -117,9 +119,15 @@ export class Registerperson implements OnDestroy {
       password: this.step3.password,
     }).subscribe({
       next: () => {
+        // ✓ მნიშვნელოვანი: isLoading = false
         this.isLoading   = false;
         this.currentStep = 4;
         this.startResendTimer();
+        
+        // ✓ ფოკუსი პირველ input-ზე
+        setTimeout(() => {
+          this.focusInput(0);
+        }, 100);
       },
       error: (err: Error) => {
         this.isLoading    = false;
@@ -167,7 +175,9 @@ export class Registerperson implements OnDestroy {
     });
   }
 
-  get enteredCode(): string { return this.verificationCode.join(''); }
+  get enteredCode(): string { 
+    return this.verificationCode.join(''); 
+  }
 
   verifyCode(): void {
     if (this.enteredCode.length < 6 || this.isLoading) return;
@@ -227,7 +237,9 @@ export class Registerperson implements OnDestroy {
     }, 1000);
   }
 
-  isScheduleSelected(s: string): boolean { return this.step2.schedules.includes(s); }
+  isScheduleSelected(s: string): boolean { 
+    return this.step2.schedules.includes(s); 
+  }
 
   toggleSchedule(s: string): void {
     const idx = this.step2.schedules.indexOf(s);

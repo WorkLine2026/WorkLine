@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output, ViewEncapsulation, OnDestroy } from '@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { timeout } from 'rxjs/operators';
 
 import { AuthService } from '../../Service/auth.service';
 import { AuthStateService } from '../../Service/auth-state.service';
@@ -162,7 +163,9 @@ export class RegistercompanyComponent implements OnDestroy {
         email: this.step2.email.trim().toLowerCase()
       },
       password: this.step2.password
-    }).subscribe({
+    }).pipe(
+      timeout(15000) // 15 წამის timeout
+    ).subscribe({
       next: (res) => {
         this.isLoading       = false;
         this.registeredEmail = res.email;
@@ -171,7 +174,8 @@ export class RegistercompanyComponent implements OnDestroy {
       },
       error: (err: Error) => {
         this.isLoading     = false;
-        this.errors2.email = err.message;
+        this.errors2.email = err.message || 'რეგისტრაციის შეცდომა';
+        console.error('Register error:', err);
       }
     });
   }
@@ -212,11 +216,16 @@ export class RegistercompanyComponent implements OnDestroy {
     this.isLoading   = true;
     this.verifyError = '';
 
+    console.log('Verifying code for email:', this.registeredEmail);
+
     this.authService.verifyCompanyEmail({
       email: this.registeredEmail,
       code:  this.fullCode
-    }).subscribe({
+    }).pipe(
+      timeout(15000) // 15 წამის timeout
+    ).subscribe({
       next: (res: VerifyResponse) => {
+        console.log('✓ Verification successful');
         this.isLoading = false;
 
         const fullProfile: CompanyProfile = {
@@ -229,9 +238,10 @@ export class RegistercompanyComponent implements OnDestroy {
         this.closed.emit();
         this.router.navigate(['/company/profile']);
       },
-      error: (err: Error) => {
+      error: (err: any) => {
+        console.error('Verification error:', err);
         this.isLoading        = false;
-        this.verifyError      = err.message;
+        this.verifyError      = err.message || 'კოდი არ სწორია ან ვადა გასულია';
         this.verificationCode = ['', '', '', '', '', ''];
         setTimeout(() =>
           (document.getElementById('vc-0') as HTMLInputElement)?.focus(), 50);
@@ -243,9 +253,21 @@ export class RegistercompanyComponent implements OnDestroy {
     if (this.resendCooldown > 0 || this.isLoading) return;
     this.isLoading = true;
 
-    this.authService.resendCompanyCode({ email: this.registeredEmail }).subscribe({
-      next:  () => { this.isLoading = false; this.startResendCooldown(); },
-      error: () => { this.isLoading = false; }
+    console.log('Resending code to:', this.registeredEmail);
+
+    this.authService.resendCompanyCode({ email: this.registeredEmail }).pipe(
+      timeout(15000)
+    ).subscribe({
+      next:  () => {
+        console.log('✓ Code resent');
+        this.isLoading = false;
+        this.startResendCooldown();
+      },
+      error: (err) => {
+        console.error('Resend error:', err);
+        this.isLoading = false;
+        this.verifyError = err.message || 'კოდის გაგზავნის შეცდომა';
+      }
     });
   }
 
