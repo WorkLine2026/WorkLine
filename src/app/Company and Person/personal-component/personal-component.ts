@@ -136,7 +136,7 @@ export class PersonalComponent {
     }
   }
 
- validate(): boolean {
+  validate(): boolean {
     this.errors = {};
     
     // ნაბიჯი 1-ის ვალიდაცია: პირადი & საკონტაქტო
@@ -153,7 +153,7 @@ export class PersonalComponent {
       if (!this.data.exp) this.errors['exp'] = true;
     }
     
-    // ნაბიჯი 5-ის ვალიდაცია: ხელმისაწვდომობა & ანაზღაურება (აქ გასწორდა შეცდომა)
+    // ნაბიჯი 5-ის ვალიდაცია: ხელმისაწვდომობა & ანაზღაურება
     if (this.currentStep === 4) {
       if (!this.data.avail) this.errors['avail'] = true;
       if (this.data.salary === null || this.data.salary === undefined || !this.data.salary.toString().trim()) {
@@ -164,9 +164,16 @@ export class PersonalComponent {
     return Object.keys(this.errors).length === 0;
   }
 
+  // ✅ FIXED: submitForm with proper logging and form reset
   submitForm(): void {
+    console.log('\n🚀 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('🚀 SUBMITTING WORKER FORM');
+    console.log('🚀 Current submitted state:', this.submitted);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+
     if (!this.data.email) {
       this.errorMessage = 'ელ-ფოსტა აუცილებელია ხელმისაწვდომი საშუალებისთვის';
+      console.error('❌ No email provided');
       return;
     }
 
@@ -174,18 +181,54 @@ export class PersonalComponent {
     this.errorMessage = '';
     this.successMessage = '';
 
+    console.log('📤 Sending worker data to backend...');
+    console.log('📞 Phone:', this.data.phone);
+    console.log('📧 Email:', this.data.email);
+    console.log('💾 All data:', this.data);
+
     this.workerService.createWorker(this.data).subscribe({
       next: (response) => {
+        console.log('\n✅ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.log('✅ RESPONSE RECEIVED FROM BACKEND');
+        console.log('✅ Response:', response);
+        console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+
         this.isLoading = false;
+        
+        // ✅ CRITICAL: Set submitted FIRST
         this.submitted = true;
+        
         this.successMessage = response.message || 'პროფილი წარმატებით შენახულია';
         this.workerId = response.workerId || '';
-        console.log('✅ Worker created successfully:', response);
+        
+        // ✅ Clear form data (optional, since success screen will be shown)
+        this.data = this.emptyData();
+        this.currentStep = 0;
+        
+        console.log('✅ Form reset, submitted set to true');
+        console.log('✅ Worker created successfully with ID:', response.workerId);
       },
       error: (error) => {
+        console.error('\n❌ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        console.error('❌ ERROR FROM BACKEND');
+        console.error('❌ Error status:', error.status);
+        console.error('❌ Error response:', error.error);
+        console.error('❌ Full error:', error);
+        console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+
         this.isLoading = false;
-        this.errorMessage = error.error || 'შეცდომა ფორმის გაგზავნის დროს';
-        console.error('❌ Error creating worker:', error);
+        
+        // ✅ Keep submitted FALSE on error - allow retry
+        this.submitted = false;
+        
+        // Extract error message from various possible locations
+        const errorMessage = error.error?.error || 
+                            error.error?.message || 
+                            error.message ||
+                            'შეცდომა ფორმის გაგზავნის დროს';
+        
+        this.errorMessage = errorMessage;
+        console.error('❌ Displayed error message:', errorMessage);
       }
     });
   }
