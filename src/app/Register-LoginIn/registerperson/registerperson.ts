@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Component, EventEmitter, Output, ViewEncapsulation, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../Service/auth.service';
@@ -45,7 +45,11 @@ export class Registerperson implements OnDestroy {
   availabilities = ['ამ კვირაში','1–2 კვირაში','1 თვეში','ნებისმიერ დროს'];
   schedules      = ['სრული განაკვეთი','ნახევარი განაკვეთი','მხოლოდ დღე','მხოლოდ ღამე','შაბათ-კვირა'];
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService, 
+    private cdr: ChangeDetectorRef,
+    private zone: NgZone
+  ) {}
 
   goNext(): void {
     this.errorMessage = '';
@@ -119,19 +123,26 @@ export class Registerperson implements OnDestroy {
       password: this.step3.password,
     }).subscribe({
       next: () => {
-        // ✓ მნიშვნელოვანი: isLoading = false
-        this.isLoading   = false;
-        this.currentStep = 4;
-        this.startResendTimer();
-        
-        // ✓ ფოკუსი პირველ input-ზე
-        setTimeout(() => {
-          this.focusInput(0);
-        }, 100);
+        this.zone.run(() => {
+          this.isLoading   = false;
+          this.currentStep = 4;
+          this.startResendTimer();
+          
+          // მომენტალურად აიძულებს ეკრანის განახლებას
+          this.cdr.detectChanges(); 
+          
+          // ფოკუსი პირველ input-ზე
+          setTimeout(() => {
+            this.focusInput(0);
+          }, 50);
+        });
       },
       error: (err: Error) => {
-        this.isLoading    = false;
-        this.errorMessage = err.message;
+        this.zone.run(() => {
+          this.isLoading    = false;
+          this.errorMessage = err.message;
+          this.cdr.detectChanges();
+        });
       },
     });
   }
@@ -184,23 +195,31 @@ export class Registerperson implements OnDestroy {
 
     this.isLoading         = true;
     this.verificationError = false;
+    this.cdr.detectChanges();
 
     this.authService.verifyPersonEmail({ email: this.step3.email, code: this.enteredCode })
       .subscribe({
         next: () => {
-          this.isLoading           = false;
-          this.verificationSuccess = true;
-          setTimeout(() => {
-            this.registered.emit();
-            this.close();
-          }, 1500);
+          this.zone.run(() => {
+            this.isLoading           = false;
+            this.verificationSuccess = true;
+            this.cdr.detectChanges(); 
+
+            setTimeout(() => {
+              this.registered.emit();
+              this.close();
+            }, 1500);
+          });
         },
         error: (err: Error) => {
-          this.isLoading         = false;
-          this.verificationError = true;
-          this.verificationCode  = ['', '', '', '', '', ''];
-          this.errorMessage      = err.message;
-          this.focusInput(0);
+          this.zone.run(() => {
+            this.isLoading         = false;
+            this.verificationError = true;
+            this.verificationCode  = ['', '', '', '', '', ''];
+            this.errorMessage      = err.message;
+            this.cdr.detectChanges();
+            this.focusInput(0);
+          });
         },
       });
   }
@@ -210,18 +229,25 @@ export class Registerperson implements OnDestroy {
 
     this.isLoading    = true;
     this.errorMessage = '';
+    this.cdr.detectChanges();
 
     this.authService.resendPersonCode(this.step3.email).subscribe({
       next: () => {
-        this.isLoading         = false;
-        this.verificationCode  = ['', '', '', '', '', ''];
-        this.verificationError = false;
-        this.startResendTimer();
-        this.focusInput(0);
+        this.zone.run(() => {
+          this.isLoading         = false;
+          this.verificationCode  = ['', '', '', '', '', ''];
+          this.verificationError = false;
+          this.startResendTimer();
+          this.cdr.detectChanges();
+          this.focusInput(0);
+        });
       },
       error: (err: Error) => {
-        this.isLoading    = false;
-        this.errorMessage = err.message;
+        this.zone.run(() => {
+          this.isLoading    = false;
+          this.errorMessage = err.message;
+          this.cdr.detectChanges();
+        });
       },
     });
   }
@@ -229,11 +255,14 @@ export class Registerperson implements OnDestroy {
   private startResendTimer(): void {
     this.resendTimer = 60;
     this.resendInterval = setInterval(() => {
-      this.resendTimer--;
-      if (this.resendTimer <= 0 && this.resendInterval) {
-        clearInterval(this.resendInterval);
-        this.resendInterval = null;
-      }
+      this.zone.run(() => {
+        this.resendTimer--;
+        if (this.resendTimer <= 0 && this.resendInterval) {
+          clearInterval(this.resendInterval);
+          this.resendInterval = null;
+        }
+        this.cdr.detectChanges(); // ტაიმერის განახლებისთვის ეკრანზე
+      });
     }, 1000);
   }
 

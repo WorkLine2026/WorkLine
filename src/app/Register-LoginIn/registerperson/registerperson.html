@@ -171,22 +171,30 @@
       </div>
 
       <!-- STEP 4: ვერიფიკაცია -->
+      <!-- FIX: მთელი step 4 სექცია გადაკეთებული visibility-სთვის -->
       <div *ngIf="currentStep === 4" class="rp-step rp-step--verify">
 
-        <!-- Success -->
+        <!-- Success State -->
         <div *ngIf="verificationSuccess" class="rp-verify-success">
           <div class="rp-success-icon">✓</div>
           <p class="rp-success-text">ვერიფიკაცია დასრულდა!</p>
-          <p class="rp-success-sub">გkönig...</p>
+          <p class="rp-success-sub">თქვენი ანგარიში წარმატებით შეიქმნა</p>
         </div>
 
-        <!-- Verify form -->
-        <div *ngIf="!verificationSuccess">
+        <!-- Verification Form State -->
+        <div *ngIf="!verificationSuccess" class="rp-verify-form">
+          <div>
+            <h3 style="text-align: center; margin-top: 0; color: #333;">კოდის შეყვანა</h3>
+            <p style="text-align: center; color: #666; font-size: 14px;">
+              შეიყვანეთ 6-ციფრიანი კოდი რომელიც გამოგზავნილია თქვენი ელ-ფოსტაზე
+            </p>
+          </div>
+
+          <!-- OTP Inputs - FIX: ხილვადი overflow-ის გარეშე -->
           <div class="rp-otp-wrap">
             <input *ngFor="let digit of verificationCode; let i = index"
               class="rp-otp-input"
               [class.error]="verificationError"
-              [class.loading]="isLoading"
               type="text" 
               inputmode="numeric" 
               maxlength="1"
@@ -198,8 +206,12 @@
               autocomplete="one-time-code">
           </div>
 
-          <p *ngIf="verificationError" class="rp-otp-error">{{ errorMessage }}</p>
+          <!-- Error Message -->
+          <p *ngIf="verificationError" class="rp-otp-error">
+            ❌ {{ errorMessage }}
+          </p>
 
+          <!-- Verify Button -->
           <button class="rp-btn-primary"
             [disabled]="enteredCode.length < 6 || isLoading"
             (click)="verifyCode()">
@@ -207,9 +219,10 @@
             <span *ngIf="isLoading" class="rp-spinner"></span>
           </button>
 
+          <!-- Resend Section -->
           <div class="rp-resend">
             <span *ngIf="resendTimer > 0" class="rp-resend-timer">
-              კოდის ხელახლა გაგზავნა {{ resendTimer }}წმ-ში
+              ⏱ კოდის ხელახლა გაგზავნა {{ resendTimer }}წმ-ში
             </span>
             <button *ngIf="resendTimer === 0 && !isLoading"
               class="rp-resend-btn" (click)="resendCode()" type="button">

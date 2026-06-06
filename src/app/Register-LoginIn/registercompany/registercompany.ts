@@ -2,7 +2,7 @@ import { Component, EventEmitter, Output, ViewEncapsulation, OnDestroy } from '@
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { timeout, finalize } from 'rxjs/operators'; // ✅ დაამატე finalize
+import { timeout, finalize } from 'rxjs/operators';
 
 import { AuthService } from '../../Service/auth.service';
 import { AuthStateService } from '../../Service/auth-state.service';
@@ -152,11 +152,15 @@ export class RegistercompanyComponent implements OnDestroy {
 
   close(): void { this.closed.emit(); }
 
-  // ✅ გამოსწორებული submit() finalize-ის მხარდაჭერით
+  /**
+   * ✅ FIX: submit() იყენებს finalize() ოპერატორს
+   * რომელიც ყოველთვის ხმელდება - error ან success უნდა
+   */
   submit(): void {
     if (!this.validateStep2()) return;
+    
     this.isLoading = true;
-    console.log('🚀 Submit clicked - loading started');
+    console.log('🚀 Submit started - isLoading:', this.isLoading);
 
     const payload = {
       company: { ...this.step1 },
@@ -167,29 +171,30 @@ export class RegistercompanyComponent implements OnDestroy {
       password: this.step2.password
     };
 
-    console.log('📤 Sending payload:', payload);
-
     this.authService.registerCompany(payload).pipe(
-      timeout(15000), // 15 წამის timeout
+      timeout(15000),
+      /* ✅ FIX: finalize() ხმელდება ყოველთვის */
       finalize(() => {
-        console.log('🔚 Observable finalized - loading should stop');
-        this.isLoading = false; // ✅ ეს ყოველთვის ხმელდება!
+        console.log('🔚 finalize() called - setting isLoading to false');
+        this.isLoading = false;
       })
     ).subscribe({
       next: (res) => {
-        console.log('✅ NEXT called with response:', res);
+        console.log('✅ Registration successful');
         this.registeredEmail = res.email;
-        this.currentStep     = 3;
+        this.currentStep = 3;
         this.startResendCooldown();
-        console.log('✓ Moved to Step 3');
       },
       error: (err: any) => {
-        console.error('❌ ERROR callback:', err);
+        console.error('❌ Registration error:', err.message);
         this.errors2.email = err.message || 'რეგისტრაციის შეცდომა';
       }
     });
   }
 
+  /**
+   * ✅ FIX: OTP input თან auto-verify უკან შესწორება
+   */
   onCodeInput(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
     const val   = input.value.replace(/\D/g, '');
@@ -197,15 +202,24 @@ export class RegistercompanyComponent implements OnDestroy {
     this.verificationCode[index] = val ? val[val.length - 1] : '';
     this.verifyError = '';
 
+    // Move to next input
     if (val && index < 5) {
-      (document.getElementById(`vc-${index + 1}`) as HTMLInputElement)?.focus();
+      setTimeout(() => {
+        (document.getElementById(`vc-${index + 1}`) as HTMLInputElement)?.focus();
+      }, 0);
     }
-    if (this.fullCode.length === 6) this.verifyCode();
+
+    // ✅ FIX: Auto-verify only if all 6 digits are filled
+    if (this.fullCode.length === 6 && !this.isLoading) {
+      setTimeout(() => this.verifyCode(), 100);
+    }
   }
 
   onCodeKeydown(index: number, event: KeyboardEvent): void {
     if (event.key === 'Backspace' && !this.verificationCode[index] && index > 0) {
-      (document.getElementById(`vc-${index - 1}`) as HTMLInputElement)?.focus();
+      setTimeout(() => {
+        (document.getElementById(`vc-${index - 1}`) as HTMLInputElement)?.focus();
+      }, 0);
     }
   }
 
@@ -214,29 +228,39 @@ export class RegistercompanyComponent implements OnDestroy {
     const text = event.clipboardData?.getData('text').replace(/\D/g, '') ?? '';
     if (text.length === 6) {
       this.verificationCode = text.split('');
-      (document.getElementById('vc-5') as HTMLInputElement)?.focus();
-      this.verifyCode();
+      setTimeout(() => {
+        (document.getElementById('vc-5') as HTMLInputElement)?.focus();
+        this.verifyCode();
+      }, 50);
     }
   }
 
   get fullCode(): string { return this.verificationCode.join(''); }
 
+  /**
+   * ✅ FIX: verifyCode() იყენებს finalize()
+   */
   verifyCode(): void {
     if (this.fullCode.length !== 6 || this.isLoading) return;
-    this.isLoading   = true;
+    
+    this.isLoading = true;
     this.verifyError = '';
 
-    console.log('Verifying code for email:', this.registeredEmail);
+    console.log('🔐 Verifying code...');
 
     this.authService.verifyCompanyEmail({
       email: this.registeredEmail,
       code:  this.fullCode
     }).pipe(
       timeout(15000),
-      finalize(() => { this.isLoading = false; })
+      /* ✅ FIX: finalize() ხმელდება ყოველთვის */
+      finalize(() => {
+        console.log('🔚 Verify finalize() called');
+        this.isLoading = false;
+      })
     ).subscribe({
       next: (res: VerifyResponse) => {
-        console.log('✓ Verification successful');
+        console.log('✅ Email verified successfully');
 
         const fullProfile: CompanyProfile = {
           ...res.company,
@@ -249,31 +273,45 @@ export class RegistercompanyComponent implements OnDestroy {
         this.router.navigate(['/company/profile']);
       },
       error: (err: any) => {
-        console.error('Verification error:', err);
-        this.verifyError      = err.message || 'კოდი არ სწორია ან ვადა გასულია';
+        console.error('❌ Verification error:', err.message);
+        this.verifyError = err.message || 'კოდი არ სწორია ან ვადა გასულია';
         this.verificationCode = ['', '', '', '', '', ''];
-        setTimeout(() =>
-          (document.getElementById('vc-0') as HTMLInputElement)?.focus(), 50);
+        
+        setTimeout(() => {
+          (document.getElementById('vc-0') as HTMLInputElement)?.focus();
+        }, 50);
       }
     });
   }
 
+  /**
+   * ✅ FIX: resendCode() იყენებს finalize()
+   */
   resendCode(): void {
     if (this.resendCooldown > 0 || this.isLoading) return;
+    
     this.isLoading = true;
-
-    console.log('Resending code to:', this.registeredEmail);
+    console.log('📧 Resending code...');
 
     this.authService.resendCompanyCode({ email: this.registeredEmail }).pipe(
       timeout(15000),
-      finalize(() => { this.isLoading = false; })
+      /* ✅ FIX: finalize() ხმელდება ყოველთვის */
+      finalize(() => {
+        console.log('🔚 Resend finalize() called');
+        this.isLoading = false;
+      })
     ).subscribe({
-      next:  () => {
-        console.log('✓ Code resent');
+      next: () => {
+        console.log('✅ Code resent successfully');
+        this.verificationCode = ['', '', '', '', '', ''];
+        this.verifyError = '';
         this.startResendCooldown();
+        setTimeout(() => {
+          (document.getElementById('vc-0') as HTMLInputElement)?.focus();
+        }, 100);
       },
-      error: (err) => {
-        console.error('Resend error:', err);
+      error: (err: any) => {
+        console.error('❌ Resend error:', err.message);
         this.verifyError = err.message || 'კოდის გაგზავნის შეცდომა';
       }
     });
@@ -284,7 +322,9 @@ export class RegistercompanyComponent implements OnDestroy {
     clearInterval(this.resendTimer);
     this.resendTimer = setInterval(() => {
       this.resendCooldown--;
-      if (this.resendCooldown <= 0) clearInterval(this.resendTimer);
+      if (this.resendCooldown <= 0) {
+        clearInterval(this.resendTimer);
+      }
     }, 1000);
   }
 
@@ -294,7 +334,10 @@ export class RegistercompanyComponent implements OnDestroy {
   }
 
   clearError(field: string, step: 1 | 2): void {
-    if (step === 1) this.errors1 = { ...this.errors1, [field]: undefined };
-    else            this.errors2 = { ...this.errors2, [field]: undefined };
+    if (step === 1) {
+      this.errors1 = { ...this.errors1, [field]: undefined };
+    } else {
+      this.errors2 = { ...this.errors2, [field]: undefined };
+    }
   }
 }

@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <!-- Body -->
+    <!-- Body - FIX: Added overflow-y for scroll support -->
     <div class="ic-body">
 
       <!-- Step 1 -->
@@ -152,66 +152,75 @@
         </p>
       </div>
 
-      <!-- Step 3: Email verification -->
+      <!-- Step 3: Email verification - FIX: Full layout rework -->
       <div *ngIf="currentStep === 3" class="ic-step ic-step--verify">
 
         <button class="ic-back" (click)="goBack()" type="button">← უკან</button>
 
-        <div class="ic-verify-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-            <polyline points="22,6 12,13 2,6"/>
-          </svg>
+        <!-- FIX: Verify header section -->
+        <div class="ic-verify-header">
+          <div class="ic-verify-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+
+          <p class="ic-verify-hint">
+            6-ნიშნა კოდი გაიგზავნა
+            <strong>{{ registeredEmail }}</strong>-ზე
+          </p>
         </div>
 
-        <p class="ic-verify-hint">
-          6-ნიშნა კოდი გაიგზავნა
-          <strong>{{ registeredEmail }}</strong>-ზე
-        </p>
+        <!-- FIX: Code inputs wrapper -->
+        <div class="ic-verify-form">
+          <!-- 6 digit inputs -->
+          <div class="ic-code-inputs" (paste)="onCodePaste($event)">
+            <input
+              *ngFor="let digit of verificationCode; let i = index"
+              [id]="'vc-' + i"
+              class="ic-code-input"
+              [class.ic-code-input--filled]="digit !== ''"
+              [class.ic-code-input--error]="verifyError"
+              type="text"
+              inputmode="numeric"
+              maxlength="1"
+              [value]="digit"
+              (input)="onCodeInput(i, $event)"
+              (keydown)="onCodeKeydown(i, $event)"
+              autocomplete="one-time-code">
+          </div>
 
-        <!-- 6 digit inputs -->
-        <div class="ic-code-inputs" (paste)="onCodePaste($event)">
-          <input
-            *ngFor="let digit of verificationCode; let i = index"
-            [id]="'vc-' + i"
-            class="ic-code-input"
-            [class.ic-code-input--filled]="digit !== ''"
-            [class.ic-code-input--error]="verifyError"
-            type="text"
-            inputmode="numeric"
-            maxlength="1"
-            [value]="digit"
-            (input)="onCodeInput(i, $event)"
-            (keydown)="onCodeKeydown(i, $event)"
-            autocomplete="one-time-code">
-        </div>
+          <!-- Error message -->
+          <div class="ic-verify-error" *ngIf="verifyError">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+              <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            {{ verifyError }}
+          </div>
 
-        <div class="ic-verify-error" *ngIf="verifyError">
-          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-          {{ verifyError }}
-        </div>
-
-        <button class="ic-btn-primary ic-btn-verify"
-          [class.ic-btn-loading]="isLoading"
-          (click)="verifyCode()" type="button"
-          [disabled]="isLoading || fullCode.length !== 6">
-          <span *ngIf="!isLoading">დადასტურება ✓</span>
-          <span *ngIf="isLoading" class="ic-spinner"></span>
-        </button>
-
-        <div class="ic-resend">
-          <span *ngIf="resendCooldown > 0" class="ic-resend-wait">
-            კოდის გათხოვნა შესაძლებელია {{ resendCooldown }}წ-ში
-          </span>
-          <button *ngIf="resendCooldown === 0" class="ic-resend-btn"
-            (click)="resendCode()" type="button">
-            კოდი არ მოვიდა? <span>თავიდან გაგზავნა</span>
+          <!-- Verify button -->
+          <button class="ic-btn-primary ic-btn-verify"
+            [class.ic-btn-loading]="isLoading"
+            (click)="verifyCode()" type="button"
+            [disabled]="isLoading || fullCode.length !== 6">
+            <span *ngIf="!isLoading">დადასტურება ✓</span>
+            <span *ngIf="isLoading" class="ic-spinner"></span>
           </button>
+
+          <!-- Resend section -->
+          <div class="ic-resend">
+            <span *ngIf="resendCooldown > 0" class="ic-resend-wait">
+              ⏱ კოდის გათხოვნა შესაძლებელია {{ resendCooldown }}წ-ში
+            </span>
+            <button *ngIf="resendCooldown === 0" class="ic-resend-btn"
+              (click)="resendCode()" type="button">
+              კოდი არ მოვიდა? <span>თავიდან გაგზავნა</span>
+            </button>
+          </div>
         </div>
 
       </div>

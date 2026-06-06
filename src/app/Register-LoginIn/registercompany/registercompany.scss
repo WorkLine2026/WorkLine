@@ -1,4 +1,4 @@
-// ─── Overlay & Modal ─────────────────────────────────────────────────────────
+// ── WorkLine RegisterCompany Modal ────────────────────────
 
 .ic-overlay {
   position: fixed;
@@ -7,54 +7,76 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 16px;
+  padding: 20px;
 }
 
 .ic-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
 }
 
 .ic-modal {
   position: relative;
+  z-index: 1;
   width: 100%;
-  max-width: 460px;
-  background: #111;
-  border: 1px solid #222;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.8);
+  max-width: 480px;
   max-height: 90vh;
   overflow-y: auto;
-
-  &::-webkit-scrollbar { width: 4px; }
-  &::-webkit-scrollbar-track { background: transparent; }
-  &::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+  background: #111;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  
+  /* FIX: Custom scrollbar styling */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 168, 76, 0.3) transparent;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(201, 168, 76, 0.3);
+    border-radius: 3px;
+    
+    &:hover {
+      background: rgba(201, 168, 76, 0.5);
+    }
+  }
 }
 
-// ─── Header ──────────────────────────────────────────────────────────────────
+// ── Header ───────────────────────────────────────────────
 
 .ic-header {
-  background: #0a0a0a;
-  padding: 0 0 24px;
-  border-bottom: 1px solid #1e1e1e;
+  background: #1a1a1a;
+  border-radius: 20px 20px 0 0;
+  padding: 0 0 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
 }
 
 .ic-steps {
   display: flex;
-  gap: 3px;
+  gap: 4px;
+  border-radius: 20px 20px 0 0;
+  overflow: hidden;
 }
 
 .ic-step-bar {
   flex: 1;
   height: 3px;
-  background: #222;
+  background: rgba(255, 255, 255, 0.1);
   transition: background 0.4s ease;
 
   &.active { background: #c9a84c; }
-  &.done { background: #7a6230; }
+  &.done   { background: #c9a84c; opacity: 0.5; }
 }
 
 .ic-header-top {
@@ -67,67 +89,104 @@
 .ic-logo {
   width: 36px;
   height: 36px;
+  border-radius: 10px;
   background: #c9a84c;
-  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
 
   span {
     font-size: 18px;
-    font-weight: 800;
-    color: #000;
-    font-family: Georgia, serif;
-    letter-spacing: -1px;
+    font-weight: 700;
+    color: #111;
+    line-height: 1;
   }
 }
 
 .ic-close {
   background: none;
   border: none;
-  color: #555;
-  font-size: 16px;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 20px;
   cursor: pointer;
   padding: 4px 8px;
-  border-radius: 4px;
-  transition: color 0.2s, background 0.2s;
-  &:hover { color: #f5f5f5; background: #222; }
+  border-radius: 6px;
+  transition: color 0.2s;
+  line-height: 1;
+
+  &:hover { color: #fff; }
+  &:disabled { opacity: 0.3; cursor: not-allowed; }
 }
 
 .ic-header-text {
-  padding: 16px 28px 0;
+  padding: 20px 28px 0;
 }
 
 .ic-step-label {
   font-size: 11px;
-  color: #c9a84c;
-  font-weight: 600;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: #c9a84c;
   margin: 0 0 6px;
+  font-weight: 600;
 }
 
 .ic-title {
   font-size: 22px;
   font-weight: 700;
-  color: #f5f5f5;
-  margin: 0 0 4px;
-  font-family: Georgia, serif;
+  color: #fff;
+  margin: 0 0 6px;
+  letter-spacing: -0.02em;
 }
 
 .ic-sub {
   font-size: 13px;
-  color: #666;
+  color: rgba(255, 255, 255, 0.45);
   margin: 0;
 }
 
-// ─── Body / Step ─────────────────────────────────────────────────────────────
+// ── Body - FIX: Added flex layout and overflow ──────────────
 
-.ic-body { padding: 24px 28px 28px; }
+.ic-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px 28px;
+  
+  /* FIX: Custom scrollbar for body */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 168, 76, 0.2) transparent;
+  
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: rgba(201, 168, 76, 0.2);
+    border-radius: 2px;
+    
+    &:hover {
+      background: rgba(201, 168, 76, 0.4);
+    }
+  }
+}
 
-.ic-step { display: flex; flex-direction: column; gap: 16px; }
+.ic-step {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
-// ─── Fields ──────────────────────────────────────────────────────────────────
+// ── Fields ───────────────────────────────────────────────
+
+.ic-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
 
 .ic-field {
   display: flex;
@@ -136,103 +195,104 @@
 
   label {
     font-size: 12px;
-    font-weight: 600;
-    color: #999;
-    letter-spacing: 0.3px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
   }
 
-  input, select {
-    width: 100%;
-    background: #1a1a1a;
-    border: 1px solid #2a2a2a;
-    border-radius: 8px;
-    color: #f5f5f5;
-    font-size: 14px;
+  input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
     padding: 11px 14px;
+    color: #fff;
+    font-size: 14px;
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-sizing: border-box;
+    transition: border-color 0.2s;
 
-    &::placeholder { color: #444; }
-
-    &:focus {
-      border-color: #c9a84c;
-      box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.08);
-    }
-  }
-
-  select {
-    appearance: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-    option { background: #1a1a1a; }
-  }
-
-  &.ic-field--error {
-    input, select { border-color: #ef4444; }
-    label { color: #ef4444; }
+    &::placeholder { color: rgba(255, 255, 255, 0.2); }
+    &:focus { border-color: #c9a84c; background: rgba(201, 168, 76, 0.05); }
   }
 }
 
-.ic-field-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-.ic-select-wrap {
-  position: relative;
-  .ic-chevron {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #555;
-    pointer-events: none;
-    font-size: 12px;
-  }
+.ic-field--error {
+  input { border-color: #ef4444; background: rgba(239, 68, 68, 0.05); }
 }
 
 .ic-error {
   font-size: 11px;
   color: #ef4444;
-  margin-top: 2px;
+  margin-top: -2px;
 }
 
-// ─── Password ─────────────────────────────────────────────────────────────────
+.ic-select-wrap {
+  position: relative;
+
+  select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 11px 36px 11px 14px;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+
+    option { background: #1a1a1a; color: #fff; }
+    &:focus { border-color: #c9a84c; }
+  }
+
+  .ic-chevron {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+    font-size: 14px;
+  }
+}
+
+// ── Password ─────────────────────────────────────────────
 
 .ic-pass-wrap {
   position: relative;
-  input { padding-right: 44px; }
+
+  input { width: 100%; padding-right: 44px; box-sizing: border-box; }
+
+  .ic-eye {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.4);
+    padding: 4px;
+    line-height: 1;
+    transition: color 0.2s;
+
+    svg { display: block; width: 18px; height: 18px; }
+
+    &:hover { color: rgba(255, 255, 255, 0.7); }
+  }
 }
 
-.ic-eye {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #555;
-  cursor: pointer;
-  padding: 2px;
-  display: flex;
-  align-items: center;
-  transition: color 0.2s;
-  &:hover { color: #c9a84c; }
-}
+// ── Password strength ────────────────────────────────────
 
 .ic-strength {
-  display: flex;
-  align-items: center;
-  gap: 10px;
   margin-top: 4px;
 }
 
 .ic-strength-bar {
-  flex: 1;
-  height: 3px;
-  background: #2a2a2a;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -244,22 +304,24 @@
 }
 
 .ic-strength-label {
+  display: inline-block;
   font-size: 11px;
   font-weight: 600;
-  min-width: 50px;
-  text-align: right;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-// ─── Buttons ──────────────────────────────────────────────────────────────────
+// ── Buttons ──────────────────────────────────────────────
 
 .ic-btn-primary {
   width: 100%;
-  padding: 13px;
-  background: #c9a84c;
+  padding: 12px;
+  border-radius: 10px;
   border: none;
-  border-radius: 8px;
-  color: #000;
-  font-size: 14px;
+  background: #c9a84c;
+  color: #111;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
   display: flex;
@@ -267,180 +329,261 @@
   justify-content: center;
   gap: 8px;
   transition: background 0.2s, transform 0.1s;
-  margin-top: 4px;
+  min-height: 46px;
 
-  &:hover:not(:disabled) { background: #d4b45a; }
+  &:hover:not(:disabled) { background: #d9bb6a; }
   &:active:not(:disabled) { transform: scale(0.99); }
-  &:disabled { opacity: 0.6; cursor: not-allowed; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  &.ic-btn-loading { pointer-events: none; }
+  .ic-btn-arrow { font-size: 16px; }
 }
 
-.ic-btn-arrow { font-size: 16px; }
-
-.ic-spinner {
-  width: 18px;
-  height: 18px;
-  border: 2px solid rgba(0, 0, 0, 0.3);
-  border-top-color: #000;
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
+.ic-btn-loading {
+  opacity: 0.6;
+  pointer-events: none;
 }
-
-@keyframes spin { to { transform: rotate(360deg); } }
 
 .ic-back {
   background: none;
   border: none;
-  color: #666;
+  color: rgba(255, 255, 255, 0.4);
   font-size: 13px;
   cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  padding: 0 0 8px;
+  align-self: flex-start;
   transition: color 0.2s;
-  margin-bottom: 4px;
-  &:hover { color: #c9a84c; }
+  font-weight: 500;
+
+  &:hover:not(:disabled) { color: #fff; }
+  &:disabled { opacity: 0.3; cursor: not-allowed; }
 }
 
-// ─── Terms ───────────────────────────────────────────────────────────────────
+// ── Spinner ──────────────────────────────────────────────
+
+.ic-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top-color: #111;
+  border-radius: 50%;
+  animation: ic-spin 0.7s linear infinite;
+}
+
+@keyframes ic-spin {
+  to { transform: rotate(360deg); }
+}
+
+// ── Terms ────────────────────────────────────────────────
 
 .ic-terms {
-  font-size: 11px;
-  color: #555;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
   text-align: center;
   margin: 0;
-  line-height: 1.6;
+  line-height: 1.5;
 
   a {
     color: #c9a84c;
     text-decoration: none;
-    &:hover { text-decoration: underline; }
+    transition: opacity 0.2s;
+
+    &:hover { opacity: 0.8; text-decoration: underline; }
   }
 }
 
-// ─── Step 3: Verification ─────────────────────────────────────────────────────
+// ── Step 3: Verification - FIX: Complete layout rework ─────
 
 .ic-step--verify {
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  text-align: center;
-
+  justify-content: center;
+  gap: 20px;
+  padding-top: 16px;
+  
   .ic-back {
     align-self: flex-start;
     margin-bottom: 8px;
   }
 }
 
+/* FIX: New header section for verification */
+.ic-verify-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  text-align: center;
+}
+
 .ic-verify-icon {
-  width: 72px;
-  height: 72px;
-  background: #1a1a1a;
-  border: 1px solid #2a2a2a;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
+  background: rgba(201, 168, 76, 0.1);
+  border: 2px solid rgba(201, 168, 76, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #c9a84c;
-  margin: 0 0 12px;
+  animation: ic-bounce 0.6s ease;
+
+  svg { width: 32px; height: 32px; }
 }
 
 .ic-verify-hint {
   font-size: 13px;
-  color: #666;
-  margin: 0 0 24px;
-  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+  line-height: 1.5;
 
   strong {
-    color: #f5f5f5;
+    color: #c9a84c;
     font-weight: 600;
   }
 }
 
-// ─── Code inputs ─────────────────────────────────────────────────────────────
+/* FIX: New form wrapper */
+.ic-verify-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+
+// ── Code inputs ──────────────────────────────────────────
 
 .ic-code-inputs {
   display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .ic-code-input {
   width: 48px;
-  height: 56px;
-  background: #1a1a1a;
-  border: 1px solid #2a2a2a;
+  height: 54px;
   border-radius: 10px;
-  color: #f5f5f5;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
   font-size: 22px;
   font-weight: 700;
   text-align: center;
   outline: none;
+  transition: all 0.2s;
   caret-color: #c9a84c;
-  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
-  font-family: Georgia, serif;
 
   &:focus {
     border-color: #c9a84c;
-    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.12);
-    transform: scale(1.05);
+    background: rgba(201, 168, 76, 0.08);
+    box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1);
   }
 
-  &.ic-code-input--filled {
-    border-color: #3a3a3a;
-    background: #1f1f1f;
+  &--filled {
+    border-color: rgba(201, 168, 76, 0.3);
+    background: rgba(201, 168, 76, 0.08);
   }
 
-  &.ic-code-input--error {
+  &--error {
     border-color: #ef4444;
-    animation: shake 0.35s ease;
+    background: rgba(239, 68, 68, 0.08);
+    animation: ic-shake 0.35s ease;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 }
 
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  20%       { transform: translateX(-4px); }
-  40%       { transform: translateX(4px); }
-  60%       { transform: translateX(-4px); }
-  80%       { transform: translateX(2px); }
-}
+// ── Verify error ─────────────────────────────────────────
 
 .ic-verify-error {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: 8px;
+  font-size: 13px;
   color: #ef4444;
-  margin-bottom: 4px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-top: -8px;
+  min-height: 18px;
+
+  svg { flex-shrink: 0; }
 }
 
-.ic-btn-verify { width: 100%; }
+// ── Verify button ────────────────────────────────────────
 
-// ─── Resend ──────────────────────────────────────────────────────────────────
-
-.ic-resend {
+.ic-btn-verify {
   margin-top: 4px;
 }
 
-.ic-resend-wait {
+// ── Resend ───────────────────────────────────────────────
+
+.ic-resend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   font-size: 12px;
-  color: #555;
+  width: 100%;
+}
+
+.ic-resend-wait {
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
 }
 
 .ic-resend-btn {
   background: none;
   border: none;
-  font-size: 12px;
-  color: #555;
+  color: #c9a84c;
   cursor: pointer;
   padding: 0;
-
+  font-size: 13px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+  
   span {
-    color: #c9a84c;
     text-decoration: underline;
-    margin-left: 3px;
-    transition: color 0.2s;
   }
 
-  &:hover span { color: #d4b45a; }
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+// ── Animations ───────────────────────────────────────────
+
+@keyframes ic-shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+@keyframes ic-bounce {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
