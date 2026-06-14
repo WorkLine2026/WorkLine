@@ -21,7 +21,7 @@
         <h2 class="rp-title">{{ stepTitles[currentStep - 1] }}</h2>
         <p class="rp-sub" *ngIf="currentStep < 4">{{ stepSubs[currentStep - 1] }}</p>
         <p class="rp-sub" *ngIf="currentStep === 4">
-          კოდი გამოგზავნილია <strong>{{ step3.email }}</strong>-ზე
+          კოდი გამოგზავნილია SMS-ით <strong>{{ registeredPhone }}</strong>-ზე
         </p>
       </div>
     </div>
@@ -170,8 +170,7 @@
         </p>
       </div>
 
-      <!-- STEP 4: ვერიფიკაცია -->
-      <!-- FIX: მთელი step 4 სექცია გადაკეთებული visibility-სთვის -->
+      <!-- STEP 4: SMS ვერიფიკაცია -->
       <div *ngIf="currentStep === 4" class="rp-step rp-step--verify">
 
         <!-- Success State -->
@@ -186,11 +185,11 @@
           <div>
             <h3 style="text-align: center; margin-top: 0; color: #333;">კოდის შეყვანა</h3>
             <p style="text-align: center; color: #666; font-size: 14px;">
-              შეიყვანეთ 6-ციფრიანი კოდი რომელიც გამოგზავნილია თქვენი ელ-ფოსტაზე
+              შეიყვანეთ 6-ციფრიანი კოდი რომელიც გამოგზავნილია SMS-ით
             </p>
           </div>
 
-          <!-- OTP Inputs - FIX: ხილვადი overflow-ის გარეშე -->
+          <!-- OTP Inputs -->
           <div class="rp-otp-wrap">
             <input *ngFor="let digit of verificationCode; let i = index"
               class="rp-otp-input"

@@ -26,12 +26,12 @@
         <p class="ic-sub">
           {{ currentStep === 1 ? 'შეავსეთ კომპანიის ძირითადი მონაცემები' :
              currentStep === 2 ? 'შეიყვანეთ საკონტაქტო ინფორმაცია' :
-             'შეამოწმეთ თქვენი ელ-ფოსტა' }}
+             'შეამოწმეთ თქვენი ტელეფონი' }}
         </p>
       </div>
     </div>
 
-    <!-- Body - FIX: Added overflow-y for scroll support -->
+    <!-- Body -->
     <div class="ic-body">
 
       <!-- Step 1 -->
@@ -152,28 +152,27 @@
         </p>
       </div>
 
-      <!-- Step 3: Email verification - FIX: Full layout rework -->
+      <!-- Step 3: SMS verification -->
       <div *ngIf="currentStep === 3" class="ic-step ic-step--verify">
 
         <button class="ic-back" (click)="goBack()" type="button">← უკან</button>
 
-        <!-- FIX: Verify header section -->
+        <!-- Verify header section -->
         <div class="ic-verify-header">
           <div class="ic-verify-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"
               fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-              <polyline points="22,6 12,13 2,6"/>
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
             </svg>
           </div>
 
           <p class="ic-verify-hint">
-            6-ნიშნა კოდი გაიგზავნა
-            <strong>{{ registeredEmail }}</strong>-ზე
+            6-ნიშნა კოდი გაიგზავნა SMS-ით
+            <strong>{{ registeredPhone }}</strong>-ზე
           </p>
         </div>
 
-        <!-- FIX: Code inputs wrapper -->
+        <!-- Code inputs wrapper -->
         <div class="ic-verify-form">
           <!-- 6 digit inputs -->
           <div class="ic-code-inputs" (paste)="onCodePaste($event)">

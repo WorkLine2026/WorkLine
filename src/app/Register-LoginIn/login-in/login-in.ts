@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '../../Service/auth.service';
 import { AuthStateService } from '../../Service/auth-state.service';
+import { VerifyResponse } from '../../Models/company-registration.model';
 
 @Component({
   selector: 'app-login-in',
@@ -36,51 +37,52 @@ export class Login {
     private authState:   AuthStateService
   ) {}
 
- submit(): void {
-  this.submitted  = true;
-  this.loginError = '';
+  submit(): void {
+    this.submitted  = true;
+    this.loginError = '';
 
-  if (!this.email || !this.password) return;
+    if (!this.email || !this.password) return;
 
-  if (this.role === 'company' && !/^\d{9}$/.test(this.companyCode)) {
-    this.companyCodeError = 'საიდენტიფიკაციო კოდი უნდა შეიცავდეს ზუსტად 9 ციფრს';
-    return;
-  }
+    if (this.role === 'company' && !/^\d{9}$/.test(this.companyCode)) {
+      this.companyCodeError = 'საიდენტიფიკაციო კოდი უნდა შეიცავდეს ზუსტად 9 ციფრს';
+      return;
+    }
 
-  this.isLoading = true;
+    this.isLoading = true;
 
-  if (this.role === 'worker') {
-    this.authService.loginPerson(this.email.trim().toLowerCase(), this.password)
-      .subscribe({
-        next: () => {
+    if (this.role === 'worker') {
+      this.authService.loginPerson(this.email.trim().toLowerCase(), this.password)
+        .subscribe({
+          next: () => {
+            this.isLoading = false;
+            this.closed.emit();
+            this.router.navigate(['/person/profile']);
+          },
+          error: (err: Error) => {
+            this.isLoading  = false;
+            this.loginError = err.message;
+          }
+        });
+    } else {
+      // ✅ კომპანიის ლოგინი
+      this.authService.loginCompany({
+        email:              this.email.trim().toLowerCase(),
+        password:           this.password,
+        identificationCode: this.companyCode
+      }).subscribe({
+        next: (res: VerifyResponse) => {
           this.isLoading = false;
+          this.authState.setSession(res.token, res.company as any);
           this.closed.emit();
-          this.router.navigate(['/person/profile']);
+          this.router.navigate(['/company/profile']);
         },
         error: (err: Error) => {
           this.isLoading  = false;
           this.loginError = err.message;
         }
       });
-  } else {
-    this.authService.loginCompany({
-      email:              this.email.trim().toLowerCase(),
-      password:           this.password,
-      identificationCode: this.companyCode
-    }).subscribe({
-      next: (res) => {
-        this.isLoading = false;
-        this.authState.setSession(res.token, res.company);
-        this.closed.emit();
-        this.router.navigate(['/company/profile']);
-      },
-      error: (err: Error) => {
-        this.isLoading  = false;
-        this.loginError = err.message;
-      }
-    });
+    }
   }
-}
 
   onForgotPassword(): void {
     this.forgotRequested.emit();

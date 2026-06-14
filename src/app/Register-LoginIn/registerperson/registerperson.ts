@@ -25,6 +25,7 @@ export class Registerperson implements OnDestroy {
   verificationError   = false;
   verificationSuccess = false;
   resendTimer         = 0;
+  registeredPhone     = '';  // ✅ ტელეფონი
   private resendInterval: ReturnType<typeof setInterval> | null = null;
 
   stepTitles = ['პირადი ინფო', 'გამოცდილება', 'ანგარიშის შექმნა', 'ვერიფიკაცია'];
@@ -94,6 +95,10 @@ export class Registerperson implements OnDestroy {
       this.errorMessage = 'გთხოვთ შეავსოთ ყველა ველი.';
       return false;
     }
+    if (!/^(\+995|995|0)?[5][0-9]{8}$/.test(phone.replace(/\s/g, ''))) {
+      this.errorMessage = 'სწორი ქართული ნომერი (+995 5XX XXX XXX)';
+      return false;
+    }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       this.errorMessage = 'ელ-ფოსტის ფორმატი არასწორია.';
       return false;
@@ -118,20 +123,18 @@ export class Registerperson implements OnDestroy {
     this.authService.registerPerson({
       ...this.step1,
       ...this.step2,
-      phone:    this.step3.phone,
-      email:    this.step3.email,
+      phone:    this.step3.phone.trim().replace(/\s/g, ''),
+      email:    this.step3.email.trim().toLowerCase(),
       password: this.step3.password,
     }).subscribe({
-      next: () => {
+      next: (res: any) => {
         this.zone.run(() => {
           this.isLoading   = false;
+          this.registeredPhone = res.phone;  // ✅ ტელეფონი
           this.currentStep = 4;
           this.startResendTimer();
-          
-          // მომენტალურად აიძულებს ეკრანის განახლებას
           this.cdr.detectChanges(); 
           
-          // ფოკუსი პირველ input-ზე
           setTimeout(() => {
             this.focusInput(0);
           }, 50);
@@ -190,6 +193,9 @@ export class Registerperson implements OnDestroy {
     return this.verificationCode.join(''); 
   }
 
+  /**
+   * ✅ ვერიფიკაცია ტელეფონით
+   */
   verifyCode(): void {
     if (this.enteredCode.length < 6 || this.isLoading) return;
 
@@ -197,33 +203,38 @@ export class Registerperson implements OnDestroy {
     this.verificationError = false;
     this.cdr.detectChanges();
 
-    this.authService.verifyPersonEmail({ email: this.step3.email, code: this.enteredCode })
-      .subscribe({
-        next: () => {
-          this.zone.run(() => {
-            this.isLoading           = false;
-            this.verificationSuccess = true;
-            this.cdr.detectChanges(); 
+    this.authService.verifyPersonPhone({ 
+      phone: this.registeredPhone, 
+      code: this.enteredCode 
+    }).subscribe({
+      next: () => {
+        this.zone.run(() => {
+          this.isLoading           = false;
+          this.verificationSuccess = true;
+          this.cdr.detectChanges(); 
 
-            setTimeout(() => {
-              this.registered.emit();
-              this.close();
-            }, 1500);
-          });
-        },
-        error: (err: Error) => {
-          this.zone.run(() => {
-            this.isLoading         = false;
-            this.verificationError = true;
-            this.verificationCode  = ['', '', '', '', '', ''];
-            this.errorMessage      = err.message;
-            this.cdr.detectChanges();
-            this.focusInput(0);
-          });
-        },
-      });
+          setTimeout(() => {
+            this.registered.emit();
+            this.close();
+          }, 1500);
+        });
+      },
+      error: (err: Error) => {
+        this.zone.run(() => {
+          this.isLoading         = false;
+          this.verificationError = true;
+          this.verificationCode  = ['', '', '', '', '', ''];
+          this.errorMessage      = err.message;
+          this.cdr.detectChanges();
+          this.focusInput(0);
+        });
+      },
+    });
   }
 
+  /**
+   * ✅ კოდის ხელახლა გაგზავნა
+   */
   resendCode(): void {
     if (this.resendTimer > 0 || this.isLoading) return;
 
@@ -231,7 +242,7 @@ export class Registerperson implements OnDestroy {
     this.errorMessage = '';
     this.cdr.detectChanges();
 
-    this.authService.resendPersonCode(this.step3.email).subscribe({
+    this.authService.resendPersonCode(this.registeredPhone).subscribe({
       next: () => {
         this.zone.run(() => {
           this.isLoading         = false;
@@ -261,7 +272,7 @@ export class Registerperson implements OnDestroy {
           clearInterval(this.resendInterval);
           this.resendInterval = null;
         }
-        this.cdr.detectChanges(); // ტაიმერის განახლებისთვის ეკრანზე
+        this.cdr.detectChanges();
       });
     }, 1000);
   }

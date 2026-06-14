@@ -4,38 +4,79 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
-import {
-  RegisterPayload,
-  RegisterResponse,
-  VerifyPayload,
-  VerifyResponse,
-  ResendPayload,
-  ResendResponse,
-} from '../Models/company-registration.model';
+// ── Company Registration Models ────────────────────────────
 
-// ── Person types ──────────────────────────────────────────────
+export interface RegisterPayload {
+  company: {
+    name: string;
+    identificationCode: string;
+    sector: string;
+    city: string;
+  };
+  contact: {
+    phone: string;
+    email: string;
+  };
+  password: string;
+}
+
+export interface RegisterResponse {
+  message?: string;
+  phone: string;
+  email: string;
+}
+
+export interface VerifyPayload {
+  phone: string;
+  code: string;
+}
+
+export interface VerifyResponse {
+  token: string;
+  company: {
+    id: string;
+    name: string;
+    identificationCode: string;
+    sector: string;
+    city: string;
+  };
+}
+
+export interface ResendPayload {
+  phone: string;
+}
+
+export interface ResendResponse {
+  message: string;
+}
+
+// ── Person Registration Models ─────────────────────────────
+
 export interface PersonRegisterPayload {
-  // Step 1
   firstName:    string;
   lastName:     string;
   birthDate:    string;
   gender:       string;
   idNumber:     string;
   city:         string;
-  // Step 2
   sector:       string;
   experience:   string;
   availability: string;
   schedules:    string[];
-  // Step 3
   phone:        string;
   email:        string;
   password:     string;
 }
 
-export interface PersonVerifyPayload {
+export interface PersonRegisterResponse {
+  message?: string;
+  phone: string;      // ✅ ტელეფონი რომელზე გაიგზავნა OTP
   email: string;
-  code:  string;
+}
+
+export interface PersonVerifyPhonePayload {
+  phone: string;
+  code: string;
 }
 
 export interface AuthUser {
@@ -62,24 +103,37 @@ export class AuthService {
 
   // ── Company ───────────────────────────────────────────────
 
+  /**
+   * ✅ კომპანიის რეგისტრაცია
+   * SMS კოდი მიიყოს ტელეფონზე
+   */
   registerCompany(payload: RegisterPayload): Observable<RegisterResponse> {
     return this.http
       .post<RegisterResponse>(`${this.companyApi}/register`, payload)
       .pipe(catchError(this.handleError));
   }
 
-  verifyCompanyEmail(payload: VerifyPayload): Observable<VerifyResponse> {
+  /**
+   * ✅ ტელეფონის დადასტურება OTP-ით (კომპანია)
+   */
+  verifyCompanyPhone(payload: VerifyPayload): Observable<VerifyResponse> {
     return this.http
-      .post<VerifyResponse>(`${this.companyApi}/verify`, payload)
+      .post<VerifyResponse>(`${this.companyApi}/verify-phone`, payload)
       .pipe(catchError(this.handleError));
   }
 
+  /**
+   * ✅ კოდის ხელახლა გაგზავნა (კომპანია, ტელეფონზე)
+   */
   resendCompanyCode(payload: ResendPayload): Observable<ResendResponse> {
     return this.http
-      .post<ResendResponse>(`${this.companyApi}/resend`, payload)
+      .post<ResendResponse>(`${this.companyApi}/resend-code`, payload)
       .pipe(catchError(this.handleError));
   }
 
+  /**
+   * ✅ კომპანიის ლოგინი
+   */
   loginCompany(payload: {
     email:               string;
     password:            string;
@@ -93,20 +147,20 @@ export class AuthService {
   // ── Person ────────────────────────────────────────────────
 
   /**
-   * ✓ იპირი რეგისტრაცია - ფაილობს გაგზავნას ელ-ფოსტის კოდი
+   * ✓ იპირი რეგისტრაცია - SMS კოდი ტელეფონზე
    */
-  registerPerson(payload: PersonRegisterPayload): Observable<{ message: string }> {
+  registerPerson(payload: PersonRegisterPayload): Observable<PersonRegisterResponse> {
     return this.http
-      .post<{ message: string }>(`${this.personApi}/register`, payload)
+      .post<PersonRegisterResponse>(`${this.personApi}/register`, payload)
       .pipe(catchError(this.handleError));
   }
 
   /**
-   * ✓ მეილის ვერიფიკაცია OTP-ით
+   * ✅ ტელეფონის დადასტურება OTP-ით (იპირი)
    */
-  verifyPersonEmail(payload: PersonVerifyPayload): Observable<PersonAuthResponse> {
+  verifyPersonPhone(payload: PersonVerifyPhonePayload): Observable<PersonAuthResponse> {
     return this.http
-      .post<PersonAuthResponse>(`${this.personApi}/verify-email`, payload)
+      .post<PersonAuthResponse>(`${this.personApi}/verify-phone`, payload)
       .pipe(
         tap(res => this.savePersonSession(res)),
         catchError(this.handleError),
@@ -114,11 +168,11 @@ export class AuthService {
   }
 
   /**
-   * ✓ კოდის ხელახლა გაგზავნა
+   * ✅ კოდის ხელახლა გაგზავნა (იპირი, ტელეფონზე)
    */
-  resendPersonCode(email: string): Observable<{ message: string }> {
+  resendPersonCode(phone: string): Observable<{ message: string }> {
     return this.http
-      .post<{ message: string }>(`${this.personApi}/resend-code`, { email })
+      .post<{ message: string }>(`${this.personApi}/resend-code`, { phone })
       .pipe(catchError(this.handleError));
   }
 
@@ -152,14 +206,14 @@ export class AuthService {
   }
 
   /**
-   * ✓ დამოწმება: ჩვეულებრივი ისწავლის?
+   * ✓ დამოწმება: ჩვეულებრივი მომხმარებელი დადებული?
    */
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
 
   /**
-   * ✓ გამოსვლა / თხოვნის გასუფთავება
+   * ✓ გამოსვლა
    */
   logout(): void {
     localStorage.removeItem('wl_token');

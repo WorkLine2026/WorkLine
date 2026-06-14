@@ -1,4 +1,4 @@
-// ─── Step 1 ──────────────────────────────────────────────────────────────────
+// ── Company Models ────────────────────────────────────────────
 
 export interface CompanyInfo {
   name: string;
@@ -7,8 +7,6 @@ export interface CompanyInfo {
   city: string;
 }
 
-// ─── Step 2 (form only) ──────────────────────────────────────────────────────
-
 export interface ContactInfo {
   phone: string;
   email: string;
@@ -16,56 +14,73 @@ export interface ContactInfo {
   confirmPassword: string;
 }
 
-// ─── გაერთიანებული პროფილი ───────────────────────────────────────────────────
-
-export interface CompanyProfile extends CompanyInfo {
-  email: string;
-  phone: string;
-}
-
-// ─── API Payloads ─────────────────────────────────────────────────────────────
-
-export interface ContactPayload {
-  phone: string;
-  email: string;
-}
-
-export interface RegisterPayload {
-  company: CompanyInfo;
-  contact: ContactPayload;
-  password: string;
-}
-
-export interface VerifyPayload {
-  email: string;
-  code: string;
-}
-
-export interface ResendPayload {
-  email: string;
-}
-
-// ─── API Responses ────────────────────────────────────────────────────────────
-
-export interface RegisterResponse {
-  message: string;
-  email: string;
-}
-
-export interface VerifyResponse {
-  message: string;
-  token: string;
-  company: CompanyProfile;
-}
-
-export interface ResendResponse {
-  message: string;
-}
-
-// ─── Password strength ────────────────────────────────────────────────────────
-
 export interface PasswordStrength {
   score: number;
   label: string;
   color: string;
+}
+
+export interface CompanyProfile {
+  id?: string;
+  name: string;
+  identificationCode: string;
+  sector: string;
+  city: string;
+  phone: string;
+  email: string;
+}
+
+// ── API Payloads & Responses ──────────────────────────────────
+
+export interface RegisterPayload {
+  company: {
+    name: string;
+    identificationCode: string;
+    sector: string;
+    city: string;
+  };
+  contact: {
+    phone: string;
+    email: string;
+  };
+  password: string;
+}
+
+export interface RegisterResponse {
+  message?: string;
+  phone: string;      // ✅ ტელეფონი რომელზე გაიგზავნა OTP
+  email: string;      // დამხმარე მეილი
+}
+
+/**
+ * ✅ ტელეფონით OTP დადასტურება
+ */
+export interface VerifyPayload {
+  phone: string;      // ✅ ტელეფონი
+  code: string;       // 6-ნიშნა OTP კოდი
+}
+
+export interface VerifyResponse {
+  message?: string;
+  token: string;
+  company: {
+    id: string;
+    name: string;
+    identificationCode: string;
+    sector: string;
+    city: string;
+  };
+  email?: string;
+  phone?: string;
+}
+
+/**
+ * ✅ OTP კოდის ხელახლა გაგზავნა
+ */
+export interface ResendPayload {
+  phone: string;      // ✅ ტელეფონი
+}
+
+export interface ResendResponse {
+  message: string;
 }

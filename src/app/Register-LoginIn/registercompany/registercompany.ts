@@ -38,7 +38,7 @@ export class RegistercompanyComponent implements OnDestroy {
 
   verificationCode: string[] = ['', '', '', '', '', ''];
   verifyError      = '';
-  registeredEmail  = '';
+  registeredPhone  = '';  // ✅ შეიცვალა registeredEmail → registeredPhone
   resendCooldown   = 0;
   private resendTimer?: ReturnType<typeof setInterval>;
 
@@ -153,8 +153,8 @@ export class RegistercompanyComponent implements OnDestroy {
   close(): void { this.closed.emit(); }
 
   /**
-   * ✅ FIX: submit() იყენებს finalize() ოპერატორს
-   * რომელიც ყოველთვის ხმელდება - error ან success უნდა
+   * ✅ submit() - რეგისტრაცია
+   * აგზავნის ტელეფონს (არა მეილს)
    */
   submit(): void {
     if (!this.validateStep2()) return;
@@ -166,14 +166,13 @@ export class RegistercompanyComponent implements OnDestroy {
       company: { ...this.step1 },
       contact: {
         phone: this.step2.phone.trim().replace(/\s/g, ''),
-        email: this.step2.email.trim().toLowerCase()
+        email: this.step2.email.trim().toLowerCase()  // მეილი შენახულია, მაგრამ OTP მიდის ტელეფონზე
       },
       password: this.step2.password
     };
 
     this.authService.registerCompany(payload).pipe(
       timeout(15000),
-      /* ✅ FIX: finalize() ხმელდება ყოველთვის */
       finalize(() => {
         console.log('🔚 finalize() called - setting isLoading to false');
         this.isLoading = false;
@@ -181,7 +180,8 @@ export class RegistercompanyComponent implements OnDestroy {
     ).subscribe({
       next: (res) => {
         console.log('✅ Registration successful');
-        this.registeredEmail = res.email;
+        // ✅ რეგისტრაციის მერე ტელეფონი იხزავება
+        this.registeredPhone = res.phone;
         this.currentStep = 3;
         this.startResendCooldown();
       },
@@ -193,7 +193,7 @@ export class RegistercompanyComponent implements OnDestroy {
   }
 
   /**
-   * ✅ FIX: OTP input თან auto-verify უკან შესწორება
+   * ✅ OTP input - ავტო-focus და ავტო-verify
    */
   onCodeInput(index: number, event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -209,7 +209,7 @@ export class RegistercompanyComponent implements OnDestroy {
       }, 0);
     }
 
-    // ✅ FIX: Auto-verify only if all 6 digits are filled
+    // Auto-verify if all 6 digits filled
     if (this.fullCode.length === 6 && !this.isLoading) {
       setTimeout(() => this.verifyCode(), 100);
     }
@@ -238,7 +238,8 @@ export class RegistercompanyComponent implements OnDestroy {
   get fullCode(): string { return this.verificationCode.join(''); }
 
   /**
-   * ✅ FIX: verifyCode() იყენებს finalize()
+   * ✅ verifyCode() - OTP დადასტურება
+   * ამჯერად ტელეფონი + კოდი ითქვა
    */
   verifyCode(): void {
     if (this.fullCode.length !== 6 || this.isLoading) return;
@@ -248,19 +249,19 @@ export class RegistercompanyComponent implements OnDestroy {
 
     console.log('🔐 Verifying code...');
 
-    this.authService.verifyCompanyEmail({
-      email: this.registeredEmail,
+    // ✅ ტელეფონით გადება (არა მეილით)
+    this.authService.verifyCompanyPhone({
+      phone: this.registeredPhone,
       code:  this.fullCode
     }).pipe(
       timeout(15000),
-      /* ✅ FIX: finalize() ხმელდება ყოველთვის */
       finalize(() => {
         console.log('🔚 Verify finalize() called');
         this.isLoading = false;
       })
     ).subscribe({
       next: (res: VerifyResponse) => {
-        console.log('✅ Email verified successfully');
+        console.log('✅ Phone verified successfully');
 
         const fullProfile: CompanyProfile = {
           ...res.company,
@@ -285,17 +286,18 @@ export class RegistercompanyComponent implements OnDestroy {
   }
 
   /**
-   * ✅ FIX: resendCode() იყენებს finalize()
+   * ✅ resendCode() - კოდის ხელახლა გაგზავნა
+   * ტელეფონზე
    */
   resendCode(): void {
     if (this.resendCooldown > 0 || this.isLoading) return;
     
     this.isLoading = true;
-    console.log('📧 Resending code...');
+    console.log('📱 Resending code to SMS...');
 
-    this.authService.resendCompanyCode({ email: this.registeredEmail }).pipe(
+    // ✅ ტელეფონით გადება
+    this.authService.resendCompanyCode({ phone: this.registeredPhone }).pipe(
       timeout(15000),
-      /* ✅ FIX: finalize() ხმელდება ყოველთვის */
       finalize(() => {
         console.log('🔚 Resend finalize() called');
         this.isLoading = false;
