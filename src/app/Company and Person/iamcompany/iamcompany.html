@@ -319,12 +319,12 @@
 
         <div class="field" style="margin-top:1rem">
           <label>დამატებითი შენიშვნა <span class="opt-label">(სურვილისამებრ)</span></label>
-          <textarea placeholder="სხვა ინფო WorkLine-ის გუნდისთვის..." [(ngModel)]="data.notes"></textarea>
+          <textarea placeholder="სხვა ინფო Personali-ის გუნდისთვის..." [(ngModel)]="data.notes"></textarea>
         </div>
 
         <label class="agree-row">
           <input type="checkbox" [(ngModel)]="data.agreed">
-          <span>ვეთანხმები WorkLine-ის <a href="#" target="_blank">პირობებს</a> და <a href="#" target="_blank">კონფიდენციალობის პოლიტიკას</a></span>
+          <span>ვეთანხმები Personali-ის <a href="#" target="_blank">პირობებს</a> და <a href="#" target="_blank">კონფიდენციალობის პოლიტიკას</a></span>
         </label>
 
         <div class="err-msg" [class.show]="errors['agreed']">
@@ -360,7 +360,7 @@
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <p class="s-title">გმადლობთ, {{ data.companyName }}!</p>
-        <p class="s-sub">თქვენი მოთხოვნა მიღებულია.<br>WorkLine დაგიკავშირდებათ 24 საათის განმავლობაში.<br><strong>✉️ დადასტურების ემეილი გაეგზავნა თქვენი ელფოსტაზე</strong></p>
+        <p class="s-sub">თქვენი მოთხოვნა მიღებულია.<br>Personali დაგიკავშირდებათ 24 საათის განმავლობაში.<br><strong>✉️ დადასტურების ემეილი გაეგზავნა თქვენი ელფოსტაზე</strong></p>
 
         <div class="s-chips">
           <span class="s-chip" *ngIf="data.city">📍 {{ data.city }}</span>

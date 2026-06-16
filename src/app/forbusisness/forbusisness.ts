@@ -27,7 +27,7 @@ interface CounterConfig {
   styleUrls: ['./forbusisness.scss']
 })
 export class Forbusisness {
-  title = 'WorkLine Business';
+  title = 'Personali Business';
    showChooseRole = false;
   showRegistration = false;
   showCompanyRegistration = false;
